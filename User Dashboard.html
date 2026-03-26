@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard – Car Parking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080c18;
+            --card: rgba(255, 255, 255, .055);
+            --border: rgba(255, 255, 255, .1);
+            --primary: #4f8ef7;
+            --success: #22c55e;
+            --muted: #64748b;
+            --light: #94a3b8;
+            --text: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0e1a 0%, #0d1526 60%, #130a2e 100%);
+            color: var(--text);
+        }
+
+        /* Topbar */
+        .topbar {
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, .3);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4f8ef7, #7c3aed);
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .topbar-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #4f8ef7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .user-details .name {
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        .user-details .role-badge {
+            font-size: 11px;
+            background: rgba(34, 197, 94, .2);
+            color: #4ade80;
+            padding: 2px 10px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        #logout-btn {
+            padding: 9px 18px;
+            background: rgba(239, 68, 68, .15);
+            border: 1px solid rgba(239, 68, 68, .3);
+            color: #fca5a5;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        #logout-btn:hover {
+            background: rgba(239, 68, 68, .28);
+        }
+
+        /* Content */
+        .content {
+            padding: 36px 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, rgba(79, 142, 247, .15), rgba(124, 58, 237, .15));
+            border: 1px solid rgba(79, 142, 247, .25);
+            border-radius: 20px;
+            padding: 32px 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '🅿️';
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 72px;
+            opacity: .12;
+        }
+
+        .hero h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .hero p {
+            color: var(--light);
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        .hero .account-id {
+            display: inline-block;
+            margin-top: 12px;
+            background: rgba(79, 142, 247, .2);
+            border: 1px solid rgba(79, 142, 247, .35);
+            color: #93c5fd;
+            padding: 6px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px 20px;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+        }
+
+        .info-card .ic-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-card .ic-value {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        /* Profile section */
+        .profile-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px 24px;
+        }
+
+        .profile-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .profile-field label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 5px;
+        }
+
+        .profile-field .val {
+            font-size: 14.5px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 14px;
+        }
+
+        @media(max-width:600px) {
+            .content {
+                padding: 24px 16px;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-details {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="topbar-icon">🅿️</div>
+            <div class="topbar-title">Car Parking System</div>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <div class="user-details">
+                <div class="name" id="user-name">User</div>
+                <div class="role-badge">Registered User</div>
+            </div>
+            <button id="logout-btn" onclick="doLogout()">🚪 Logout</button>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="hero">
+            <h2>Welcome back, <span id="hero-name">User</span>! 👋</h2>
+            <p>You are signed in to the Car Parking System. Use your Login ID to access parking services.</p>
+            <div class="account-id">🪪 Login ID: <strong id="hero-loginid">—</strong></div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="info-card">
+                <div class="ic-label">Account Status</div>
+                <div class="ic-value" id="ic-status" style="color:#4ade80;">● Active</div>
+            </div>
+            <div class="info-card">
+                <div class="ic-label">Vehicle Number</div>
+                <div class="ic-value" id="ic-vehicle">—</div>
+            </div>
+            <div class="info-card">
+                <div class="ic-label">Member Since</div>
+                <div class="ic-value" id="ic-since" style="font-size:14px;">—</div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h3>👤 My Profile</h3>
+            <div class="profile-grid">
+                <div class="profile-field"><label>Full Name</label>
+                    <div class="val" id="pf-name">—</div>
+                </div>
+                <div class="profile-field"><label>Username (Login ID)</label>
+                    <div class="val" id="pf-username">—</div>
+                </div>
+                <div class="profile-field"><label>Email Address</label>
+                    <div class="val" id="pf-email">—</div>
+                </div>
+                <div class="profile-field"><label>Phone</label>
+                    <div class="val" id="pf-phone">—</div>
+                </div>
+                <div class="profile-field"><label>Vehicle Number</label>
+                    <div class="val" id="pf-vehicle">—</div>
+                </div>
+                <div class="profile-field"><label>Account Status</label>
+                    <div class="val" id="pf-status">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script>
+        const session = requireLogin(['user']);
+        if (session) {
+            const u = session;
+            const initial = (u.full_name || u.username || 'U')[0].toUpperCase();
+            document.getElementById('user-avatar').textContent = initial;
+            document.getElementById('user-name').textContent = u.full_name || u.username;
+            document.getElementById('hero-name').textContent = (u.full_name || u.username).split(' ')[0];
+            document.getElementById('hero-loginid').textContent = u.username;
+            document.getElementById('ic-vehicle').textContent = u.vehicle_number || '—';
+            document.getElementById('ic-since').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+            document.getElementById('pf-name').textContent = u.full_name || '—';
+            document.getElementById('pf-username').textContent = u.username || '—';
+            document.getElementById('pf-email').textContent = u.email || '—';
+            document.getElementById('pf-phone').textContent = u.phone || '—';
+            document.getElementById('pf-vehicle').textContent = u.vehicle_number || '—';
+            document.getElementById('pf-status').textContent = u.status || 'active';
+            document.getElementById('pf-status').style.color = u.status === 'active' ? '#4ade80' : '#f87171';
+        }
+        function doLogout() {
+            clearSession();
+            window.location.href = 'Login page.html';
+        }
+    </script>
+</body>
+
+</html>

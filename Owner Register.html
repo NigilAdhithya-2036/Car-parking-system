@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Owner Register – Car Parking System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  min-height:100vh;
+  background:#05010f;
+  display:flex;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+
+:root{
+  --g:#f97316;--g2:#fb923c;--t:#fbbf24;
+  --v:#ea580c;--pk:#f43f5e;
+  --txt:#fff7ed;--muted:#9a7055;
+  --err:#f87171;--ok:#4ade80;
+  --card:rgba(26,8,0,0.88);
+  --border:rgba(249,115,22,0.20);
+}
+
+/* ═══════════ LEFT ═══════════ */
+.left{
+  flex:0 0 46%;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 36px;
+}
+
+/* Multi-layer orange/amber gradient */
+.bg-layer{
+  position:absolute;inset:0;z-index:0;
+  background:linear-gradient(160deg,#0d0200 0%,#1a0600 40%,#0d0800 100%);
+}
+.bg-layer::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 25%, rgba(249,115,22,0.50) 0%,transparent 55%),
+    radial-gradient(ellipse 65% 55% at 85% 75%, rgba(251,191,36,0.30) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 55% 5%, rgba(244,63,94,0.15) 0%,transparent 50%);
+  animation:bgShift 14s ease-in-out infinite alternate;
+}
+@keyframes bgShift{
+  0%{transform:scale(1)   rotate(0deg);}
+  50%{transform:scale(1.06) rotate(1.5deg);}
+  100%{transform:scale(1.02) rotate(-1deg);}
+}
+
+/* Dot matrix */
+.dots{
+  position:absolute;inset:0;z-index:1;
+  background-image:radial-gradient(circle,rgba(249,115,22,0.20) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 30%,transparent 80%);
+}
+
+/* Diagonal stripes */
+.stripes{
+  position:absolute;inset:0;z-index:1;opacity:0.04;
+  background:repeating-linear-gradient(
+    -45deg,
+    transparent,transparent 20px,
+    rgba(249,115,22,0.5) 20px, rgba(249,115,22,0.5) 21px
+  );
+}
+
+/* Corner accent shapes */
+.corner-shape{
+  position:absolute;z-index:2;pointer-events:none;
+}
+.cs-tl{top:-60px;left:-60px;width:220px;height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,0.28) 0%,transparent 65%);
+}
+.cs-br{bottom:-80px;right:-80px;width:280px;height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(251,191,36,0.20) 0%,transparent 65%);
+}
+
+/* ── Brand ── */
+.brand{position:relative;z-index:5;text-align:center;margin-bottom:20px;width:100%;max-width:380px;}
+.brand-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(249,115,22,0.15);
+  border:1px solid rgba(251,146,60,0.35);
+  border-radius:99px;padding:6px 18px;
+  font-size:11.5px;font-weight:700;color:#fed7aa;
+  letter-spacing:0.6px;text-transform:uppercase;margin-bottom:18px;
+}
+.brand-pill::before{content:'';width:8px;height:8px;border-radius:50%;background:#f97316;box-shadow:0 0 8px #f97316;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.brand h1{
+  font-size:38px;font-weight:900;line-height:1.2;
+  background:linear-gradient(135deg,#fff 0%,#fb923c 50%,#fbbf24 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-1.5px;margin-bottom:12px;
+}
+.brand p{font-size:14px;color:#9a7055;line-height:1.7;max-width:300px;margin:0 auto;}
+
+/* ── Process steps illustration ── */
+.process{
+  position:relative;z-index:5;
+  width:100%;max-width:380px;
+  margin:22px 0;
+}
+.proc-step{
+  display:flex;align-items:flex-start;gap:16px;
+  margin-bottom:6px;
+  padding:14px 16px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
+  transition:border-color .3s,background .3s;
+  animation:procSlide .5s ease both;
+}
+.proc-step:nth-child(1){animation-delay:.1s;}
+.proc-step:nth-child(2){animation-delay:.2s;}
+.proc-step:nth-child(3){animation-delay:.3s;}
+.proc-step:hover{border-color:rgba(249,115,22,0.25);background:rgba(249,115,22,0.05);}
+@keyframes procSlide{from{opacity:0;transform:translateX(-20px);}to{opacity:1;transform:translateX(0);}}
+.proc-num{
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;flex-shrink:0;
+  border:1px solid rgba(251,146,60,0.35);
+  color:#fb923c;background:rgba(249,115,22,0.12);
+}
+.proc-txt .pt{font-size:13.5px;font-weight:700;color:#fff7ed;}
+.proc-txt .ps{font-size:11.5px;color:#9a7055;margin-top:2px;}
+
+/* ── SVG car art ── */
+.car-art{
+  position:relative;z-index:5;
+  width:100%;max-width:360px;
+  animation:carFloat 5s ease-in-out infinite;
+  filter:drop-shadow(0 20px 50px rgba(249,115,22,0.40));
+}
+@keyframes carFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+
+/* ── Trust badges ── */
+.trust{
+  position:relative;z-index:5;
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  margin-top:16px;
+}
+.trust-badge{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;padding:7px 12px;
+  font-size:11.5px;color:#9a7055;font-weight:600;
+}
+.trust-badge span{font-size:14px;}
+
+/* ═══════════ RIGHT ═══════════ */
+.right{
+  flex:1;
+  position:relative;
+  background:rgba(255,255,255,0.015);
+  border-left:1px solid rgba(255,255,255,0.05);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:0;overflow-y:auto;
+}
+.right::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 80% 10%,rgba(249,115,22,0.07) 0%,transparent 60%);
+}
+
+.form-scroll{
+  position:relative;z-index:1;
+  width:100%;max-width:440px;
+  padding:44px 48px 36px;
+}
+
+/* ── Header ── */
+.form-head{margin-bottom:30px;}
+.logo-row{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.logo-ico{
+  width:50px;height:50px;
+  background:linear-gradient(135deg,#f97316,#fbbf24);
+  border-radius:15px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 8px 24px rgba(249,115,22,0.45),0 0 0 1px rgba(251,146,60,0.30);
+  flex-shrink:0;
+}
+.logo-name .n{font-size:15px;font-weight:800;color:#fff7ed;letter-spacing:-0.3px;}
+.logo-name .s{font-size:11px;color:#9a7055;margin-top:2px;font-weight:500;}
+.form-head h2{font-size:26px;font-weight:900;color:#fff7ed;letter-spacing:-0.6px;margin-bottom:7px;}
+.form-head p{font-size:13.5px;color:#9a7055;line-height:1.6;}
+
+/* ── Stepper ── */
+.stepper{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;padding:14px 16px;
+  margin-bottom:28px;gap:0;
+}
+.snode{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.scircle{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.04);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#5f7a68;
+  transition:all .4s ease;
+}
+.scircle.active{
+  border-color:var(--g);background:rgba(249,115,22,0.15);color:var(--g);
+  box-shadow:0 0 0 4px rgba(249,115,22,0.10),0 0 18px rgba(249,115,22,0.28);
+}
+.scircle.done{border-color:var(--g);background:var(--g);color:#1a0600;}
+.slabel{font-size:10px;font-weight:700;color:#5f7a68;text-transform:uppercase;letter-spacing:0.4px;transition:color .4s;}
+.slabel.active{color:var(--g);}
+.sline{flex:1.5;height:2px;background:rgba(255,255,255,0.07);position:relative;overflow:hidden;margin-bottom:14px;}
+.sline-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--g),var(--t));transition:width .55s ease;}
+
+/* ── Step panels ── */
+.panel{display:none;}
+.panel.active{display:block;animation:panelIn .4s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── Alerts ── */
+.alert{border-radius:13px;padding:12px 16px;font-size:13.5px;margin-bottom:18px;display:none;align-items:center;gap:10px;}
+.alert.err{background:rgba(248,113,113,0.09);border:1px solid rgba(248,113,113,0.22);color:#fca5a5;animation:shake .4s ease;}
+.alert.ok {background:rgba(74,222,128,0.09); border:1px solid rgba(74,222,128,0.22); color:#86efac;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+/* ── Row ── */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* ── Fields ── */
+.field{margin-bottom:18px;}
+.flabel{
+  display:flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:700;color:#5f7a68;
+  text-transform:uppercase;letter-spacing:0.9px;margin-bottom:8px;
+}
+.flabel .dot{width:5px;height:5px;border-radius:50%;background:var(--g);}
+.req{color:var(--err);margin-left:2px;}
+.iw{position:relative;}
+.iico{
+  position:absolute;left:15px;top:50%;transform:translateY(-50%);
+  opacity:0.5;transition:opacity .3s;pointer-events:none;
+}
+.iico svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:#9a7055;}
+input[type=text],input[type=email],input[type=password],input[type=tel],input[type=number]{
+  width:100%;
+  padding:14px 46px 14px 46px;
+  background:rgba(255,255,255,0.04);
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:13px;
+  color:var(--txt);font-size:14.5px;font-family:inherit;
+  transition:border-color .3s,background .3s,box-shadow .3s;
+  outline:none;
+}
+/* Hide default arrows on number inputs */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+input::placeholder{color:rgba(95,122,104,0.5);}
+input:focus{
+  border-color:rgba(249,115,22,0.55);
+  background:rgba(249,115,22,0.05);
+  box-shadow:0 0 0 4px rgba(249,115,22,0.09),0 2px 16px rgba(249,115,22,0.06);
+}
+input.err-inp{border-color:rgba(248,113,113,0.5);}
+input.ok-inp{border-color:rgba(74,222,128,0.4);}
+.field:focus-within .iico{opacity:1;}
+
+.eye-btn{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:#5f7a68;padding:4px;border-radius:8px;
+  transition:color .2s,transform .2s;
+}
+.eye-btn:hover{color:var(--g);transform:translateY(-50%) scale(1.1);}
+.eye-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;}
+.fhint{font-size:11px;color:#7a5540;margin-top:5px;padding-left:2px;}
+
+/* ── Vehicle type ── */
+.vgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.vopt{cursor:pointer;}
+.vopt input[type=radio]{display:none;}
+.vcard{
+  background:rgba(255,255,255,0.04);
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:13px;padding:14px 8px;text-align:center;
+  transition:all .3s;user-select:none;position:relative;overflow:hidden;
+}
+.vcard .vi{font-size:26px;display:block;margin-bottom:6px;}
+.vcard .vn{font-size:11px;font-weight:700;color:#5f7a68;text-transform:uppercase;letter-spacing:0.4px;transition:color .3s;}
+.vopt input:checked+.vcard{
+  border-color:rgba(249,115,22,0.55);
+  background:rgba(249,115,22,0.09);
+  box-shadow:0 0 0 3px rgba(249,115,22,0.08),0 0 20px rgba(249,115,22,0.12);
+}
+.vopt input:checked+.vcard .vn{color:var(--g);}
+.vopt input:checked+.vcard::before{
+  content:'✓';position:absolute;top:4px;right:7px;
+  font-size:10px;font-weight:900;color:var(--g);
+}
+.vcard:hover{border-color:rgba(16,185,129,0.25);}
+
+/* ── Password strength ── */
+.sbar{margin-top:10px;height:5px;border-radius:5px;background:rgba(255,255,255,0.07);overflow:hidden;}
+.sfill{height:100%;border-radius:5px;width:0%;transition:width .45s,background .45s;}
+.stxt{font-size:11.5px;color:#5f7a68;margin-top:6px;}
+
+/* ── Confirm match ── */
+.match-msg{font-size:11.5px;margin-top:6px;display:none;}
+
+/* ── Buttons ── */
+.btn-row{display:flex;gap:12px;margin-top:6px;}
+.btn-next,.reg-submit{
+  flex:1;padding:15px 20px;
+  border:none;border-radius:13px;
+  font-size:15px;font-weight:800;font-family:inherit;
+  cursor:pointer;letter-spacing:0.3px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#ea580c 0%,#f97316 50%,#fbbf24 100%);
+  color:#1a0600;
+  box-shadow:0 10px 34px rgba(249,115,22,0.42);
+  transition:transform .25s,box-shadow .25s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-next::before,.reg-submit::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.18) 50%,rgba(255,255,255,0) 100%);
+  transform:translateX(-100%) skewX(-15deg);transition:transform .6s ease;
+}
+.btn-next:hover::before,.reg-submit:hover::before{transform:translateX(200%) skewX(-15deg);}
+.btn-next:hover,.reg-submit:hover{transform:translateY(-3px);box-shadow:0 16px 44px rgba(249,115,22,0.56);}
+.btn-next:active,.reg-submit:active{transform:translateY(-1px);}
+.reg-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.barrow{transition:transform .25s;}
+.btn-next:hover .barrow,.reg-submit:hover .barrow{transform:translateX(4px);}
+
+.btn-back{
+  flex:1;padding:15px 20px;
+  border:1.5px solid rgba(255,255,255,0.09);
+  border-radius:13px;font-size:15px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+  background:rgba(255,255,255,0.04);color:#5f7a68;
+  transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-back:hover{background:rgba(255,255,255,0.08);color:var(--txt);border-color:rgba(255,255,255,0.18);}
+
+/* ── Spinner ── */
+.spinner{width:17px;height:17px;border:2.5px solid rgba(26,6,0,0.25);border-top-color:#1a0600;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Login link ── */
+.login-row{text-align:center;margin-top:20px;font-size:14.5px;color:#5f7a68;}
+.login-row a{
+  font-weight:800;text-decoration:none;margin-left:4px;
+  background:linear-gradient(90deg,#fb923c,#fbbf24);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  transition:filter .2s;
+}
+.login-row a:hover{filter:brightness(1.2);}
+
+/* ── Progress bar (top of page for mobile) ── */
+.page-progress{
+  position:fixed;top:0;left:0;right:0;height:3px;z-index:100;
+  background:rgba(255,255,255,0.05);
+}
+.page-progress-fill{
+  height:100%;width:33%;
+  background:linear-gradient(90deg,var(--g),var(--t));
+  transition:width .5s ease;
+}
+
+/* ════ RESPONSIVE ════ */
+
+/* Tablet / smaller desktop (≤ 900px) — stack vertically */
+@media(max-width:900px){
+  html,body{overflow-x:hidden;overflow-y:auto;}
+  body{flex-direction:column;min-height:100vh;}
+
+  .left{
+    flex:none;
+    width:100%;
+    min-height:auto;
+    padding:24px 20px 16px;
+    justify-content:flex-start;
+  }
+  /* Hide heavy visual elements to keep left strip slim on mobile */
+  .bg-layer::before,.dots,.stripes,.corner-shape,
+  .car-art,.trust,.process{display:none;}
+
+  .brand{margin-bottom:12px;max-width:100%;}
+  .brand h1{font-size:26px;letter-spacing:-0.8px;margin-bottom:8px;}
+  .brand p{font-size:13px;}
+  .brand-pill{font-size:10px;padding:5px 14px;margin-bottom:12px;}
+
+  .right{
+    flex:1;
+    border-left:none;
+    border-top:1px solid rgba(255,255,255,0.06);
+    width:100%;
+    overflow-y:visible;
+  }
+  .right::before{display:none;}
+
+  .form-scroll{
+    padding:28px 20px 32px;
+    max-width:100%;
+  }
+
+  .logo-row{margin-bottom:20px;}
+  .form-head h2{font-size:22px;}
+  .form-head p{font-size:13px;}
+
+  .stepper{
+    padding:12px 12px;
+    margin-bottom:22px;
+  }
+  .scircle{width:30px;height:30px;font-size:12px;}
+  .slabel{font-size:9.5px;}
+  .sline{margin-bottom:12px;}
+
+  .row{grid-template-columns:1fr 1fr;gap:12px;}
+
+  .btn-row{gap:10px;}
+  .btn-next,.reg-submit,.btn-back{padding:13px 14px;font-size:14px;}
+
+  .login-row{font-size:13.5px;}
+}
+
+/* Mobile (≤ 600px) — single column everything */
+@media(max-width:600px){
+  .left{padding:18px 16px 12px;}
+  .brand h1{font-size:22px;}
+  .brand-pill{display:none;}
+
+  .form-scroll{padding:22px 16px 28px;}
+
+  .row{grid-template-columns:1fr;gap:0;}
+
+  .stepper{
+    padding:10px;
+    gap:0;
+    border-radius:12px;
+  }
+  .scircle{width:28px;height:28px;font-size:11px;}
+  .slabel{font-size:9px;letter-spacing:0;}
+  .sline{margin-bottom:10px;}
+
+  /* Vehicle grid: all 3 in a row still but smaller */
+  .vgrid{gap:7px;}
+  .vcard{padding:10px 4px;border-radius:10px;}
+  .vcard .vi{font-size:22px;}
+  .vcard .vn{font-size:10px;}
+
+  .btn-row{flex-direction:column-reverse;gap:8px;}
+  /* On step 1 (only Next), show full width */
+  #p1 .btn-row{flex-direction:column;}
+  .btn-next,.reg-submit,.btn-back{
+    width:100%;padding:14px;
+    font-size:15px;
+  }
+
+  .logo-ico{width:42px;height:42px;font-size:18px;border-radius:12px;}
+  .logo-name .n{font-size:13px;}
+  .logo-name .s{font-size:10px;}
+  .form-head h2{font-size:20px;}
+
+  input[type=text],input[type=email],
+  input[type=password],input[type=tel],input[type=number]{
+    padding:13px 44px 13px 44px;
+    font-size:14px;
+  }
+
+  .page-progress{height:2px;}
+  .login-row{margin-top:16px;font-size:13px;}
+}
+
+/* Very small screens (≤ 400px) */
+@media(max-width:400px){
+  .brand h1{font-size:19px;}
+  .form-head h2{font-size:18px;}
+  .scircle{width:26px;height:26px;font-size:10px;}
+  .slabel{display:none;}
+  .vgrid{gap:5px;}
+  .vcard{padding:8px 3px;}
+}
+</style>
+</head>
+<body>
+
+<div class="page-progress"><div class="page-progress-fill" id="pg-bar"></div></div>
+
+<!-- ════════ LEFT ════════ -->
+<div class="left">
+  <div class="bg-layer"></div>
+  <div class="dots"></div>
+  <div class="stripes"></div>
+  <div class="corner-shape cs-tl"></div>
+  <div class="corner-shape cs-br"></div>
+
+  <div class="brand">
+    <div class="brand-pill">Partner Account</div>
+    <h1>Manage Your<br/>Parking Spaces.</h1>
+    <p>Join our network of parking owners to manage and monetize your parking lots efficiently.</p>
+  </div>
+
+  <!-- Animated car SVG -->
+  <div class="car-art" style="width:100%;max-width:360px;position:relative;z-index:5;">
+    <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <!-- Road -->
+      <rect x="0" y="195" width="400" height="45" rx="0" fill="rgba(20,7,0,0.9)"/>
+      <rect x="0" y="193" width="400" height="4" fill="rgba(249,115,22,0.20)"/>
+      <!-- Road markings -->
+      <rect x="30" y="210" width="50" height="5" rx="2" fill="rgba(255,255,255,0.12)"/>
+      <rect x="110" y="210" width="50" height="5" rx="2" fill="rgba(255,255,255,0.12)"/>
+      <rect x="190" y="210" width="50" height="5" rx="2" fill="rgba(255,255,255,0.12)"/>
+      <rect x="270" y="210" width="50" height="5" rx="2" fill="rgba(255,255,255,0.12)"/>
+      <rect x="350" y="210" width="50" height="5" rx="2" fill="rgba(255,255,255,0.12)"/>
+
+      <!-- Car shadow -->
+      <ellipse cx="200" cy="198" rx="115" ry="8" fill="rgba(0,0,0,0.4)"/>
+
+      <!-- Car body -->
+      <rect x="80" y="140" width="240" height="58" rx="10" fill="url(#carGrad)"/>
+      <!-- Car roof -->
+      <path d="M130 140 L152 88 L248 88 L272 140 Z" fill="url(#roofGrad)" rx="8"/>
+      <!-- Roof highlight -->
+      <path d="M148 137 L163 96 L237 96 L252 137 Z" fill="rgba(255,255,255,0.06)" rx="4"/>
+
+      <!-- Windshield -->
+      <path d="M154 135 L168 95 L232 95 L248 135 Z" fill="rgba(103,232,249,0.22)" stroke="rgba(103,232,249,0.3)" stroke-width="1.5"/>
+      <!-- Windshield reflection -->
+      <path d="M168 130 L178 98 L196 98 L184 130 Z" fill="rgba(255,255,255,0.08)"/>
+
+      <!-- Side windows -->
+      <rect x="87" y="117" width="42" height="23" rx="5" fill="rgba(103,232,249,0.15)" stroke="rgba(103,232,249,0.2)" stroke-width="1"/>
+      <rect x="271" y="117" width="42" height="23" rx="5" fill="rgba(103,232,249,0.15)" stroke="rgba(103,232,249,0.2)" stroke-width="1"/>
+
+      <!-- Door line -->
+      <line x1="200" y1="143" x2="200" y2="195" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+      <!-- Door handles -->
+      <rect x="163" y="163" width="18" height="5" rx="2.5" fill="rgba(255,255,255,0.2)"/>
+      <rect x="219" y="163" width="18" height="5" rx="2.5" fill="rgba(255,255,255,0.2)"/>
+
+      <!-- Front grille -->
+      <rect x="318" y="170" width="18" height="16" rx="3" fill="rgba(0,0,0,0.4)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+      <line x1="318" y1="176" x2="336" y2="176" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+      <line x1="318" y1="181" x2="336" y2="181" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+
+      <!-- Front lights -->
+      <rect x="314" y="150" width="22" height="13" rx="4" fill="rgba(255,240,100,0.85)"/>
+      <rect x="316" y="152" width="18" height="9" rx="3" fill="rgba(255,240,100,0.4)"/>
+      <!-- Light beam -->
+      <path d="M336 156 L400 130 L400 165 Z" fill="url(#beamGrad)" opacity="0.35"/>
+
+      <!-- Rear lights -->
+      <rect x="64" y="150" width="20" height="14" rx="4" fill="rgba(248,113,113,0.8)"/>
+      <rect x="66" y="152" width="16" height="10" rx="3" fill="rgba(248,113,113,0.4)"/>
+
+      <!-- Wheels -->
+      <!-- Front wheel -->
+      <circle cx="290" cy="194" r="28" fill="rgba(18,6,0,0.95)" stroke="rgba(249,115,22,0.45)" stroke-width="2.5"/>
+      <circle cx="290" cy="194" r="18" fill="rgba(30,10,0,0.9)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+      <circle cx="290" cy="194" r="7" fill="rgba(249,115,22,0.35)" stroke="rgba(249,115,22,0.6)" stroke-width="1.5"/>
+      <!-- Spokes -->
+      <line x1="290" y1="176" x2="290" y2="186" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="290" y1="202" x2="290" y2="212" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="272" y1="194" x2="282" y2="194" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="298" y1="194" x2="308" y2="194" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="277" y1="181" x2="284" y2="188" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="296" y1="200" x2="303" y2="207" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="277" y1="207" x2="284" y2="200" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="296" y1="188" x2="303" y2="181" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Rear wheel -->
+      <circle cx="112" cy="194" r="28" fill="rgba(18,6,0,0.95)" stroke="rgba(249,115,22,0.45)" stroke-width="2.5"/>
+      <circle cx="112" cy="194" r="18" fill="rgba(30,10,0,0.9)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+      <circle cx="112" cy="194" r="7" fill="rgba(249,115,22,0.35)" stroke="rgba(249,115,22,0.6)" stroke-width="1.5"/>
+      <line x1="112" y1="176" x2="112" y2="186" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="112" y1="202" x2="112" y2="212" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="94" y1="194" x2="104" y2="194" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="120" y1="194" x2="130" y2="194" stroke="rgba(249,115,22,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="99" y1="181" x2="106" y2="188" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="118" y1="200" x2="125" y2="207" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="99" y1="207" x2="106" y2="200" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="118" y1="188" x2="125" y2="181" stroke="rgba(249,115,22,0.38)" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Floating icons around car -->
+      <g opacity="0.9">
+        <!-- Parking icon float -->
+        <rect x="18" y="45" width="52" height="52" rx="14" fill="rgba(16,185,129,0.12)" stroke="rgba(52,211,153,0.3)" stroke-width="1.5"/>
+        <text x="44" y="78" text-anchor="middle" font-size="26" font-family="Arial" fill="#6ee7b7">P</text>
+        <animateTransform attributeName="transform" type="translate" values="18,45;18,35;18,45" dur="4s" repeatCount="indefinite" additive="sum"/>
+      </g>
+      <g opacity="0.85">
+        <rect x="328" y="30" width="48" height="48" rx="13" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.3)" stroke-width="1.5"/>
+        <text x="352" y="61" text-anchor="middle" font-size="22" font-family="Arial">📍</text>
+        <animateTransform attributeName="transform" type="translate" values="328,30;328,40;328,30" dur="5s" repeatCount="indefinite" additive="sum"/>
+      </g>
+      <g opacity="0.8">
+        <rect x="8" y="145" width="44" height="44" rx="12" fill="rgba(245,158,11,0.12)" stroke="rgba(245,158,11,0.3)" stroke-width="1.5"/>
+        <text x="30" y="173" text-anchor="middle" font-size="20" font-family="Arial">⚡</text>
+        <animateTransform attributeName="transform" type="translate" values="8,145;8,135;8,145" dur="3.5s" repeatCount="indefinite" additive="sum"/>
+      </g>
+
+      <!-- Gradients -->
+      <defs>
+        <linearGradient id="carGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#7c2d00"/>
+          <stop offset="100%" stop-color="#4a1a00"/>
+        </linearGradient>
+        <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#923600"/>
+          <stop offset="100%" stop-color="#5c2200"/>
+        </linearGradient>
+        <linearGradient id="beamGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" stop-color="rgba(255,240,100,0.9)"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Process steps -->
+  <div class="process">
+    <div class="proc-step">
+      <div class="proc-num">1</div>
+      <div class="proc-txt">
+        <div class="pt">Fill Owner Info</div>
+        <div class="ps">Name, username, owner ID &amp; email</div>
+      </div>
+    </div>
+    <div class="proc-step">
+      <div class="proc-num">2</div>
+      <div class="proc-txt">
+        <div class="pt">Add Parking Lot</div>
+        <div class="ps">Lot name, location &amp; total slots</div>
+      </div>
+    </div>
+    <div class="proc-step">
+      <div class="proc-num">3</div>
+      <div class="proc-txt">
+        <div class="pt">Set Password &amp; Done!</div>
+        <div class="ps">Secure your account and start parking</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust badges -->
+  <div class="trust">
+    <div class="trust-badge"><span>🔒</span>SSL Secured</div>
+    <div class="trust-badge"><span>⚡</span>Instant Access</div>
+    <div class="trust-badge"><span>🛡️</span>Data Private</div>
+  </div>
+</div>
+
+<!-- ════════ RIGHT ════════ -->
+<div class="right">
+  <div class="form-scroll">
+
+    <!-- Header -->
+    <div class="form-head">
+      <div class="logo-row">
+        <div class="logo-ico">🅿️</div>
+        <div class="logo-name">
+          <div class="n">Car Parking System</div>
+          <div class="s">Create your account</div>
+        </div>
+      </div>
+      <h2>Register Parking Lot</h2>
+      <p>Complete the 3-step form below to become a parking partner.</p>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper">
+      <div class="snode">
+        <div class="scircle active" id="sc1">1</div>
+        <div class="slabel active" id="sl1">Owner Info</div>
+      </div>
+      <div class="sline"><div class="sline-fill" id="sf1"></div></div>
+      <div class="snode">
+        <div class="scircle" id="sc2">2</div>
+        <div class="slabel" id="sl2">Lot Details</div>
+      </div>
+      <div class="sline"><div class="sline-fill" id="sf2"></div></div>
+      <div class="snode">
+        <div class="scircle" id="sc3">3</div>
+        <div class="slabel" id="sl3">Security</div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div id="a-err" class="alert err" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="a-err-txt"></span>
+    </div>
+    <div id="a-ok" class="alert ok" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span id="a-ok-txt"></span>
+    </div>
+
+    <form id="reg-form" novalidate>
+
+      <!-- ── PANEL 1: Personal ── -->
+      <div class="panel active" id="p1">
+        <div class="row">
+          <div class="field">
+            <div class="flabel"><span class="dot"></span>Full Name<span class="req">*</span></div>
+            <div class="iw">
+              <span class="iico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+              <input type="text" id="fn" placeholder="John Doe" autocomplete="name"/>
+            </div>
+          </div>
+          <div class="field">
+            <div class="flabel"><span class="dot"></span>Owner ID<span class="req">*</span></div>
+            <div class="iw">
+              <span class="iico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+              <input type="text" id="on" placeholder="e.g. OWNER002" style="text-transform:uppercase"/>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Username / Login ID<span class="req">*</span></div>
+          <div class="iw">
+            <span class="iico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+            <input type="text" id="un" placeholder="e.g. owner123" autocomplete="username"/>
+          </div>
+          <p class="fhint">⚠ No spaces allowed. Used for your login.</p>
+        </div>
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Email Address<span class="req">*</span></div>
+          <div class="iw">
+            <span class="iico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <input type="email" id="em" placeholder="owner@example.com" autocomplete="email"/>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-next" id="n1">
+            Next Step
+            <svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PANEL 2: Lot Details ── -->
+      <div class="panel" id="p2">
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Parking Lot Name<span class="req">*</span></div>
+          <div class="iw">
+            <span class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <input type="text" id="lot" placeholder="e.g. Central Parking Lot"/>
+          </div>
+        </div>
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Location<span class="req">*</span></div>
+          <div class="iw">
+             <span class="iico"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg></span>
+             <input type="text" id="loc" placeholder="e.g. Main Street"/>
+          </div>
+        </div>
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Total Slots<span class="req">*</span></div>
+          <div class="iw">
+            <span class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
+            <input type="number" id="slots" placeholder="e.g. 50" min="1"/>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:24px;">
+          <button type="button" class="btn-back" id="b2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <button type="button" class="btn-next" id="n2">
+            Next Step
+            <svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PANEL 3: Security ── -->
+      <div class="panel" id="p3">
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Password<span class="req">*</span></div>
+          <div class="iw">
+            <span class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <input type="password" id="pw" placeholder="Create a strong password" autocomplete="new-password"/>
+            <button type="button" class="eye-btn" id="ey1" aria-label="Toggle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="sbar"><div class="sfill" id="sbar"></div></div>
+          <p class="stxt" id="stxt">Minimum 6 characters</p>
+        </div>
+        <div class="field">
+          <div class="flabel"><span class="dot"></span>Confirm Password<span class="req">*</span></div>
+          <div class="iw">
+            <span class="iico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+            <input type="password" id="cpw" placeholder="Re-enter your password" autocomplete="new-password"/>
+            <button type="button" class="eye-btn" id="ey2" aria-label="Toggle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <p class="match-msg" id="mmp"></p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-back" id="b3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <button type="submit" class="reg-submit" id="sub">
+            Create Account
+            <svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <div class="login-row" style="line-height:1.6;">
+      Already have a partner account?<a href="Owner Login.html">Sign in here</a><br>
+      <span style="opacity:0.9;font-size:13px;">Looking for normal parking? <a href="Register.html" style="color:#f97316;">Register as User</a></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API='http://localhost:5000/api';
+
+/* ── Eye toggles ── */
+function mkEye(btnId,inpId){
+  const btn=document.getElementById(btnId);
+  const inp=document.getElementById(inpId);
+  let sh=false;
+  btn.addEventListener('click',()=>{
+    sh=!sh; inp.type=sh?'text':'password';
+    btn.innerHTML=sh
+      ?'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;display:block"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      :'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;display:block"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  });
+}
+mkEye('ey1','pw'); mkEye('ey2','cpw');
+
+/* ── Password strength ── */
+document.getElementById('pw').addEventListener('input',function(){
+  const v=this.value; let s=0;
+  if(v.length>=6)s++; if(v.length>=10)s++;
+  if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++;
+  if(/[^A-Za-z0-9]/.test(v))s++;
+  const c=['','#f87171','#fb923c','#facc15','#4ade80','#34d399'];
+  const w=['0%','20%','40%','60%','80%','100%'];
+  const l=['','Weak','Fair','Good','Strong','Very Strong'];
+  document.getElementById('sbar').style.cssText=`width:${w[s]};background:${c[s]||'#f87171'}`;
+  const t=document.getElementById('stxt');
+  t.textContent=s?'Strength: '+l[s]:'Minimum 6 characters'; t.style.color=c[s]||'#5f7a68';
+});
+
+/* ── Confirm match ── */
+document.getElementById('cpw').addEventListener('input',function(){
+  const pw=document.getElementById('pw').value;
+  const mp=document.getElementById('mmp');
+  mp.style.display='block';
+  if(this.value===pw){ mp.textContent='✓ Passwords match'; mp.style.color='#4ade80'; }
+  else { mp.textContent='✗ Passwords do not match'; mp.style.color='#f87171'; }
+  if(!this.value){mp.style.display='none';}
+});
+
+/* ── Stepper ── */
+let cur=1;
+function goStep(n){
+  document.getElementById('p'+cur).classList.remove('active');
+  cur=n;
+  for(let i=1;i<=3;i++){
+    const c=document.getElementById('sc'+i);
+    const l=document.getElementById('sl'+i);
+    c.classList.remove('active','done'); l.classList.remove('active');
+    if(i<n){c.classList.add('done');c.textContent='✓';}
+    else if(i===n){c.classList.add('active');c.textContent=i;l.classList.add('active');}
+    else{c.textContent=i;}
+  }
+  document.getElementById('sf1').style.width=(n>1)?'100%':'0%';
+  document.getElementById('sf2').style.width=(n>2)?'100%':'0%';
+  document.getElementById('pg-bar').style.width=(n===1?'33%':n===2?'66%':'100%');
+  document.getElementById('p'+n).classList.add('active');
+  hideA();
+}
+
+/* ── Alerts ── */
+const aErr=document.getElementById('a-err');
+const aOk =document.getElementById('a-ok');
+function showErr(m){
+  document.getElementById('a-err-txt').textContent=m;
+  aErr.style.display='flex'; aOk.style.display='none';
+  aErr.style.animation='none'; void aErr.offsetWidth; aErr.style.animation='shake .4s ease';
+}
+function showOk(m){
+  document.getElementById('a-ok-txt').textContent=m;
+  aOk.style.display='flex'; aErr.style.display='none';
+}
+function hideA(){aErr.style.display='none'; aOk.style.display='none';}
+
+const g=id=>document.getElementById(id).value.trim();
+
+/* ── Step 1 → 2 ── */
+document.getElementById('n1').addEventListener('click',()=>{
+  if(!g('fn')){showErr('Full name is required.');return;}
+  if(!g('on')){showErr('Owner ID is required.');return;}
+  if(!g('un')){showErr('Username is required.');return;}
+  if(/\s/.test(g('un'))){showErr('Username cannot contain spaces.');return;}
+  if(!g('em')||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g('em'))){showErr('Enter a valid email address.');return;}
+  goStep(2);
+});
+
+/* ── Step 2 → 3 ── */
+document.getElementById('n2').addEventListener('click',()=>{
+  if(!g('lot')){showErr('Parking lot name is required.');return;}
+  if(!g('loc')){showErr('Location is required.');return;}
+  if(!g('slots') || isNaN(g('slots'))){showErr('Enter a valid number for slots.');return;}
+  goStep(3);
+});
+
+document.getElementById('b2').addEventListener('click',()=>goStep(1));
+document.getElementById('b3').addEventListener('click',()=>goStep(2));
+
+/* ── Submit ── */
+document.getElementById('reg-form').addEventListener('submit',async(e)=>{
+  e.preventDefault(); hideA();
+  const pw=document.getElementById('pw').value;
+  const cp=document.getElementById('cpw').value;
+  if(pw.length<6){showErr('Password must be at least 6 characters.');return;}
+  if(pw!==cp){showErr('Passwords do not match.');return;}
+
+  const btn=document.getElementById('sub');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span><span>Creating…</span>';
+
+  try{
+    const res=await fetch(`${API}/auth/register-owner`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        owner_id:g('on').toUpperCase(),
+        username:g('un'), password:pw,
+        full_name:g('fn'), email:g('em'),
+        lot_name:g('lot'), location:g('loc'),
+        total_slots:parseInt(g('slots'))
+      })
+    });
+    const data=await res.json();
+    if(!data.success){showErr(data.message); btn.disabled=false; btn.innerHTML='Create Account <svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'; return;}
+    showOk('🎉 Account created! Redirecting to login…');
+    setTimeout(()=>{window.location.href='Owner Login.html';},2200);
+  }catch{
+    showErr('Cannot connect to server. Make sure the backend is running on port 5000.');
+    btn.disabled=false; btn.innerHTML='Create Account <svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  }
+});
+</script>
+</body>
+</html>

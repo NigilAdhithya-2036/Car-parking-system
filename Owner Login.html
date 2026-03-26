@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Owner Login – Car Parking System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+
+:root{
+  --v: #f97316; --v2: #fb923c; --c: #fbbf24;
+  --pk: #f43f5e; --og: #f97316;
+  --bg-dark: #0d0600; --bg2: #1a0900;
+  --glass: rgba(255,255,255,0.04);
+  --gb: rgba(255,255,255,0.09);
+  --txt: #fff7ed; --muted: #9a7860;
+  --err: #f87171; --ok: #4ade80;
+}
+
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg-dark);
+  display:flex; min-height:100vh;
+}
+
+/* ───────────── LEFT PANEL ───────────── */
+.left{
+  flex:0 0 52%;
+  position:relative;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:40px;
+}
+
+/* Aurora animated background */
+.aurora{
+  position:absolute; inset:0; z-index:0;
+  background: linear-gradient(135deg,#0d0600 0%,#2d0e00 30%,#1a0900 60%,#0d0600 100%);
+}
+.aurora::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 30%, rgba(249,115,22,0.55) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 60% at 80% 70%, rgba(251,191,36,0.35) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 60% 10%, rgba(244,63,94,0.25) 0%,transparent 50%);
+  animation: auroraShift 12s ease-in-out infinite alternate;
+}
+@keyframes auroraShift{
+  0%  {opacity:1; transform:scale(1) rotate(0deg);}
+  50% {opacity:0.8; transform:scale(1.08) rotate(2deg);}
+  100%{opacity:1; transform:scale(1.04) rotate(-1deg);}
+}
+
+/* Noise texture overlay */
+.noise{
+  position:absolute;inset:0;z-index:1;opacity:0.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+
+/* Hexagon grid overlay */
+.hex-grid{
+  position:absolute;inset:0;z-index:1;opacity:0.09;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0l28 16v32L28 64 0 48V16z' fill='none' stroke='%23fb923c' stroke-width='0.8'/%3E%3Cpath d='M56 34l28 16v32L56 98 28 82V50z' fill='none' stroke='%23fb923c' stroke-width='0.8'/%3E%3Cpath d='M0 34l28 16v32L0 98l-28-16V50z' fill='none' stroke='%23fb923c' stroke-width='0.8'/%3E%3C/svg%3E");
+}
+
+/* ── Big decorative city/parking SVG illustration ── */
+.illus-wrap{
+  position:relative;z-index:3;
+  width:100%;max-width:440px;
+  filter:drop-shadow(0 40px 80px rgba(249,115,22,0.5));
+  animation:illusFloat 6s ease-in-out infinite;
+}
+@keyframes illusFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-14px);}
+}
+
+/* ── Floating stat cards ── */
+.stat-cards{
+  position:absolute;z-index:4;
+  width:100%;max-width:440px;
+  pointer-events:none;
+}
+.stat-card{
+  position:absolute;
+  background:rgba(30,12,0,0.75);
+  border:1px solid rgba(249,115,22,0.28);
+  border-radius:16px;
+  padding:12px 18px;
+  backdrop-filter:blur(20px);
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  animation:cardDrift 8s ease-in-out infinite;
+}
+.stat-card:nth-child(1){top:-20px;left:-30px;animation-delay:0s;}
+.stat-card:nth-child(2){bottom:-10px;right:-20px;animation-delay:2.5s;}
+.stat-card:nth-child(3){top:40%;left:-50px;animation-delay:5s;}
+@keyframes cardDrift{
+  0%,100%{transform:translateY(0) rotate(-1deg);}
+  50%{transform:translateY(-10px) rotate(0.5deg);}
+}
+.stat-ico{
+  width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;
+}
+.ic-v{background:linear-gradient(135deg,rgba(249,115,22,0.3),rgba(251,146,60,0.15));border:1px solid rgba(249,115,22,0.35);}
+.ic-c{background:linear-gradient(135deg,rgba(251,191,36,0.3),rgba(245,158,11,0.15));border:1px solid rgba(251,191,36,0.35);}
+.ic-g{background:linear-gradient(135deg,rgba(74,222,128,0.3),rgba(34,197,94,0.15));border:1px solid rgba(74,222,128,0.3);}
+.stat-info .num{font-size:18px;font-weight:800;color:#f0ebff;line-height:1;}
+.stat-info .lbl{font-size:11px;color:var(--muted);margin-top:3px;font-weight:500;}
+
+/* ── Glow rings ── */
+.ring{
+  position:absolute;border-radius:50%;border:1px solid;
+  pointer-events:none;z-index:2;
+  animation:ringPulse 4s ease-in-out infinite;
+}
+.ring1{width:280px;height:280px;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  border-color:rgba(249,115,22,0.25);
+  animation-delay:0s;}
+.ring2{width:400px;height:400px;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  border-color:rgba(251,191,36,0.14);
+  animation-delay:1.5s;}
+.ring3{width:520px;height:520px;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  border-color:rgba(244,63,94,0.08);
+  animation-delay:3s;}
+@keyframes ringPulse{
+  0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1);}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}
+}
+
+/* ── Left panel brand text ── */
+.brand{position:relative;z-index:5;text-align:center;margin-bottom:32px;}
+.brand-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(249,115,22,0.18);
+  border:1px solid rgba(251,146,60,0.35);
+  border-radius:99px;padding:6px 16px;
+  font-size:12px;font-weight:700;color:#fed7aa;
+  letter-spacing:0.5px;margin-bottom:20px;
+  text-transform:uppercase;
+}
+.brand-badge span{width:8px;height:8px;border-radius:50%;background:#f97316;
+  box-shadow:0 0 8px #f97316;animation:blinkDot 2s infinite;}
+@keyframes blinkDot{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.brand h1{
+  font-size:42px;font-weight:900;line-height:1.15;
+  background:linear-gradient(135deg,#fff 20%,#fb923c 55%,#fbbf24 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-1.5px;margin-bottom:14px;
+}
+.brand p{font-size:15px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.7;}
+
+/* ── Left features list ── */
+.features{
+  position:relative;z-index:5;
+  display:flex;flex-direction:column;gap:12px;
+  margin-top:28px;width:100%;max-width:340px;
+}
+.feat-item{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;padding:12px 16px;
+  transition:border-color .3s,background .3s;
+}
+.feat-item:hover{border-color:rgba(249,115,22,0.28);background:rgba(249,115,22,0.06);}
+.feat-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.feat-txt .ft{font-size:13.5px;font-weight:700;color:var(--txt);}
+.feat-txt .fs{font-size:11.5px;color:var(--muted);margin-top:1px;}
+
+/* ───────────── RIGHT PANEL ───────────── */
+.right{
+  flex:1;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 48px;
+  background:rgba(255,255,255,0.015);
+  border-left:1px solid rgba(255,255,255,0.06);
+  overflow-y:auto;
+}
+
+/* Subtle right bg glow */
+.right::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 80% 20%, rgba(249,115,22,0.08) 0%,transparent 60%);
+}
+
+.form-box{
+  position:relative;z-index:1;
+  width:100%;max-width:400px;
+}
+
+/* ── Form header ── */
+.form-header{margin-bottom:36px;}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;color:var(--muted);text-decoration:none;
+  margin-bottom:28px;transition:color .2s;font-weight:600;letter-spacing:0.3px;
+}
+.back-link:hover{color:#fb923c;}
+.back-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+.form-logo{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+.form-logo-ico{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,#f97316,#fbbf24);
+  border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+  box-shadow:0 8px 24px rgba(249,115,22,0.5),0 0 0 1px rgba(251,146,60,0.4);
+  flex-shrink:0;
+}
+.form-logo-txt .name{font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-0.3px;}
+.form-logo-txt .role{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;letter-spacing:0.3px;}
+
+.form-header h2{font-size:28px;font-weight:900;color:var(--txt);letter-spacing:-0.8px;margin-bottom:8px;}
+.form-header p{font-size:14px;color:var(--muted);line-height:1.6;}
+
+/* ── Input fields ── */
+.field{margin-bottom:20px;}
+.field-label{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:9px;
+}
+.field-label span{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.9px;}
+
+.inp-wrap{position:relative;}
+.inp-ico{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-size:16px;pointer-events:none;opacity:0.5;transition:opacity .3s;
+}
+.inp-ico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+
+input[type=text],input[type=password]{
+  width:100%;
+  padding:15px 50px 15px 48px;
+  background:rgba(255,255,255,0.045);
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  color:var(--txt);font-size:15px;font-family:inherit;
+  transition:border-color .3s,background .3s,box-shadow .3s;
+  outline:none;
+}
+input::placeholder{color:rgba(136,120,170,0.4);}
+input:focus{
+  border-color:rgba(249,115,22,0.65);
+  background:rgba(249,115,22,0.06);
+  box-shadow:0 0 0 4px rgba(249,115,22,0.12),0 2px 20px rgba(249,115,22,0.08);
+}
+.field:focus-within .inp-ico{opacity:1;}
+
+.eye-btn{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  padding:4px;border-radius:8px;
+  color:var(--muted);transition:color .2s,transform .2s;
+}
+.eye-btn:hover{color:#fb923c;transform:translateY(-50%) scale(1.1);}
+.eye-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;}
+
+/* ── Error box ── */
+#err-msg{
+  background:rgba(248,113,113,0.10);
+  border:1px solid rgba(248,113,113,0.25);
+  color:#fca5a5;border-radius:14px;
+  padding:13px 17px;font-size:13.5px;
+  margin-bottom:20px;display:none;
+  animation:shake .4s ease;
+  display:flex;align-items:center;gap:10px;
+}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px)};}
+
+/* ── Button ── */
+#login-btn{
+  width:100%;padding:16px 24px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#ea580c 0%,#f97316 40%,#fbbf24 100%);
+  border:none;border-radius:14px;
+  color:#fff;font-size:16px;font-weight:800;
+  font-family:inherit;cursor:pointer;letter-spacing:0.3px;
+  transition:transform .25s,box-shadow .25s;
+  box-shadow:0 10px 40px rgba(249,115,22,0.50),0 2px 8px rgba(0,0,0,0.3);
+}
+#login-btn .btn-inner{display:flex;align-items:center;justify-content:center;gap:10px;position:relative;z-index:1;}
+#login-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.18) 50%,rgba(255,255,255,0) 100%);
+  transform:translateX(-100%) skewX(-15deg);
+  transition:transform .6s ease;
+}
+#login-btn:hover::before{transform:translateX(200%) skewX(-15deg);}
+#login-btn:hover{transform:translateY(-3px);box-shadow:0 18px 50px rgba(249,115,22,0.60),0 4px 12px rgba(0,0,0,0.3);}
+#login-btn:active{transform:translateY(-1px);}
+#login-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
+.btn-arrow{transition:transform .25s;}
+#login-btn:hover .btn-arrow{transform:translateX(4px);}
+
+/* ── Divider ── */
+.divider{display:flex;align-items:center;gap:12px;margin:22px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07);}
+.divider span{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;}
+
+/* ── Register link ── */
+.reg-row{text-align:center;font-size:14.5px;color:var(--muted);}
+.reg-row a{
+  font-weight:800;text-decoration:none;margin-left:4px;
+  background:linear-gradient(90deg,#fb923c,#fbbf24);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  transition:filter .2s;
+}
+.reg-row a:hover{filter:brightness(1.2);}
+
+/* ── Creds section removed ── */
+
+/* ── Spinner ── */
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  body{flex-direction:column;overflow-y:auto;}
+  .left{flex:none;min-height:220px;padding:30px 24px 20px;}
+  .aurora::before,.ring,.illus-wrap,.stat-cards,.features{display:none;}
+  .brand h1{font-size:28px;}
+  .right{border-left:none;border-top:1px solid rgba(255,255,255,0.06);padding:32px 24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ LEFT PANEL ════════ -->
+<div class="left">
+  <div class="aurora"></div>
+  <div class="noise"></div>
+  <div class="hex-grid"></div>
+  <div class="ring ring1"></div>
+  <div class="ring ring2"></div>
+  <div class="ring ring3"></div>
+
+  <div class="brand">
+    <div class="brand-badge"><span></span>Partner Portal · 2026</div>
+    <h1>Manage Your<br/>Parking Empire</h1>
+    <p>Monitor slots, manage bookings, and analyze your revenue in real time — all from one unified dashboard.</p>
+  </div>
+
+  <!-- Parking illustration SVG -->
+  <div style="position:relative;z-index:4;width:100%;max-width:420px;">
+    <div class="illus-wrap">
+      <svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- Ground -->
+        <ellipse cx="250" cy="320" rx="220" ry="18" fill="rgba(249,115,22,0.15)"/>
+        <!-- Road markings -->
+        <rect x="60" y="290" width="380" height="30" rx="4" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.12)" stroke-width="1"/>
+        <rect x="100" y="298" width="40" height="5" rx="2" fill="rgba(255,255,255,0.15)"/>
+        <rect x="165" y="298" width="40" height="5" rx="2" fill="rgba(255,255,255,0.15)"/>
+        <rect x="230" y="298" width="40" height="5" rx="2" fill="rgba(255,255,255,0.15)"/>
+        <rect x="295" y="298" width="40" height="5" rx="2" fill="rgba(255,255,255,0.15)"/>
+        <rect x="360" y="298" width="40" height="5" rx="2" fill="rgba(255,255,255,0.15)"/>
+
+        <!-- Building back-left -->
+        <rect x="30" y="120" width="90" height="178" rx="6" fill="rgba(10,5,25,0.8)" stroke="rgba(124,58,237,0.2)" stroke-width="1"/>
+        <rect x="40" y="133" width="18" height="14" rx="3" fill="rgba(124,58,237,0.35)"/>
+        <rect x="68" y="133" width="18" height="14" rx="3" fill="rgba(6,182,212,0.25)"/>
+        <rect x="96" y="133" width="18" height="14" rx="3" fill="rgba(124,58,237,0.2)"/>
+        <rect x="40" y="158" width="18" height="14" rx="3" fill="rgba(6,182,212,0.3)"/>
+        <rect x="68" y="158" width="18" height="14" rx="3" fill="rgba(124,58,237,0.4)"/>
+        <rect x="96" y="158" width="18" height="14" rx="3" fill="rgba(6,182,212,0.2)"/>
+        <rect x="40" y="183" width="18" height="14" rx="3" fill="rgba(124,58,237,0.25)"/>
+        <rect x="68" y="183" width="18" height="14" rx="3" fill="rgba(6,182,212,0.35)"/>
+        <rect x="96" y="183" width="18" height="14" rx="3" fill="rgba(124,58,237,0.3)"/>
+        <rect x="40" y="208" width="18" height="14" rx="3" fill="rgba(6,182,212,0.2)"/>
+        <rect x="68" y="208" width="18" height="14" rx="3" fill="rgba(124,58,237,0.3)"/>
+        <rect x="96" y="208" width="18" height="14" rx="3" fill="rgba(236,72,153,0.25)"/>
+        <rect x="40" y="233" width="18" height="14" rx="3" fill="rgba(124,58,237,0.35)"/>
+        <rect x="68" y="233" width="18" height="14" rx="3" fill="rgba(6,182,212,0.2)"/>
+        <rect x="96" y="233" width="18" height="14" rx="3" fill="rgba(124,58,237,0.25)"/>
+
+        <!-- Building back-right -->
+        <rect x="380" y="100" width="95" height="198" rx="6" fill="rgba(10,5,25,0.8)" stroke="rgba(6,182,212,0.2)" stroke-width="1"/>
+        <rect x="390" y="113" width="18" height="14" rx="3" fill="rgba(6,182,212,0.35)"/>
+        <rect x="418" y="113" width="18" height="14" rx="3" fill="rgba(124,58,237,0.3)"/>
+        <rect x="446" y="113" width="18" height="14" rx="3" fill="rgba(6,182,212,0.2)"/>
+        <rect x="390" y="138" width="18" height="14" rx="3" fill="rgba(124,58,237,0.4)"/>
+        <rect x="418" y="138" width="18" height="14" rx="3" fill="rgba(6,182,212,0.25)"/>
+        <rect x="446" y="138" width="18" height="14" rx="3" fill="rgba(236,72,153,0.3)"/>
+        <rect x="390" y="163" width="18" height="14" rx="3" fill="rgba(6,182,212,0.2)"/>
+        <rect x="418" y="163" width="18" height="14" rx="3" fill="rgba(124,58,237,0.35)"/>
+        <rect x="446" y="163" width="18" height="14" rx="3" fill="rgba(6,182,212,0.3)"/>
+        <rect x="390" y="188" width="18" height="14" rx="3" fill="rgba(124,58,237,0.25)"/>
+        <rect x="418" y="188" width="18" height="14" rx="3" fill="rgba(6,182,212,0.4)"/>
+        <rect x="446" y="188" width="18" height="14" rx="3" fill="rgba(124,58,237,0.2)"/>
+        <rect x="390" y="213" width="18" height="14" rx="3" fill="rgba(236,72,153,0.2)"/>
+        <rect x="418" y="213" width="18" height="14" rx="3" fill="rgba(124,58,237,0.35)"/>
+        <rect x="446" y="213" width="18" height="14" rx="3" fill="rgba(6,182,212,0.3)"/>
+        <rect x="390" y="238" width="18" height="14" rx="3" fill="rgba(124,58,237,0.3)"/>
+        <rect x="418" y="238" width="18" height="14" rx="3" fill="rgba(6,182,212,0.2)"/>
+        <rect x="446" y="238" width="18" height="14" rx="3" fill="rgba(124,58,237,0.25)"/>
+
+        <!-- MAIN PARKING STRUCTURE -->
+        <rect x="140" y="80" width="220" height="218" rx="8" fill="rgba(26,10,0,0.92)" stroke="rgba(249,115,22,0.40)" stroke-width="1.5"/>
+        <!-- Parking floors -->
+        <rect x="140" y="138" width="220" height="2" fill="rgba(251,146,60,0.22)"/>
+        <rect x="140" y="196" width="220" height="2" fill="rgba(251,146,60,0.22)"/>
+        <rect x="140" y="254" width="220" height="2" fill="rgba(251,146,60,0.22)"/>
+
+        <!-- BIG P Sign -->
+        <rect x="214" y="40" width="72" height="72" rx="36" fill="rgba(249,115,22,0.25)" stroke="rgba(251,146,60,0.55)" stroke-width="2"/>
+        <text x="250" y="88" text-anchor="middle" font-size="40" font-weight="900" fill="url(#pg)" font-family="Arial,sans-serif">P</text>
+        <defs>
+          <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fb923c"/>
+            <stop offset="100%" stop-color="#fbbf24"/>
+          </linearGradient>
+        </defs>
+        <!-- P sign glow -->
+        <circle cx="250" cy="76" r="36" fill="rgba(249,115,22,0.12)">
+          <animate attributeName="r" values="36;42;36" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.1;0.25;0.1" dur="3s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Parking slots top floor -->
+        <rect x="155" y="92" width="52" height="42" rx="4" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+        <rect x="217" y="92" width="52" height="42" rx="4" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+        <rect x="279" y="92" width="72" height="42" rx="4" fill="rgba(248,113,113,0.08)" stroke="rgba(248,113,113,0.3)" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Car on top floor (left) -->
+        <g transform="translate(162,100)">
+          <rect x="4" y="10" width="34" height="20" rx="4" fill="#f97316" opacity="0.9"/>
+          <rect x="8" y="4" width="22" height="14" rx="3" fill="#ea580c"/>
+          <rect x="10" y="6" width="9" height="9" rx="1.5" fill="rgba(251,191,36,0.7)"/>
+          <rect x="23" y="6" width="5" height="9" rx="1.5" fill="rgba(251,191,36,0.7)"/>
+          <circle cx="8" cy="32" r="4" fill="#3a1200" stroke="#fb923c" stroke-width="1.5"/>
+          <circle cx="34" cy="32" r="4" fill="#3a1200" stroke="#fb923c" stroke-width="1.5"/>
+          <circle cx="8" cy="32" r="1.5" fill="#fb923c"/>
+          <circle cx="34" cy="32" r="1.5" fill="#fb923c"/>
+          <rect x="2" y="16" width="4" height="6" rx="1" fill="#fbbf24" opacity="0.9"/>
+          <rect x="36" y="16" width="4" height="6" rx="1" fill="#f87171" opacity="0.8"/>
+        </g>
+
+        <!-- Car on top floor (middle) -->
+        <g transform="translate(220,100)">
+          <rect x="4" y="10" width="36" height="20" rx="4" fill="#06b6d4" opacity="0.85"/>
+          <rect x="8" y="4" width="24" height="14" rx="3" fill="#0891b2"/>
+          <rect x="10" y="6" width="10" height="9" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+          <rect x="24" y="6" width="6" height="9" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+          <circle cx="9" cy="32" r="4" fill="#042f3e" stroke="#38bdf8" stroke-width="1.5"/>
+          <circle cx="36" cy="32" r="4" fill="#042f3e" stroke="#38bdf8" stroke-width="1.5"/>
+          <circle cx="9" cy="32" r="1.5" fill="#38bdf8"/>
+          <circle cx="36" cy="32" r="1.5" fill="#38bdf8"/>
+          <rect x="2" y="16" width="4" height="6" rx="1" fill="#ffd700" opacity="0.8"/>
+          <rect x="38" y="16" width="4" height="6" rx="1" fill="#f87171" opacity="0.8"/>
+        </g>
+
+        <!-- RESERVED sign on floor 2 -->
+        <rect x="155" y="150" width="190" height="42" rx="4" fill="rgba(248,113,113,0.05)" stroke="rgba(248,113,113,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="250" y="177" text-anchor="middle" font-size="12" fill="rgba(248,113,113,0.6)" font-family="Arial,sans-serif" font-weight="700" letter-spacing="2">RESERVED</text>
+
+        <!-- Car on floor 3 -->
+        <g transform="translate(175,210)">
+          <rect x="4" y="10" width="40" height="22" rx="5" fill="#ec4899" opacity="0.85"/>
+          <rect x="9" y="3" width="26" height="16" rx="3" fill="#be185d"/>
+          <rect x="11" y="5" width="10" height="10" rx="2" fill="rgba(255,255,255,0.45)"/>
+          <rect x="25" y="5" width="8" height="10" rx="2" fill="rgba(255,255,255,0.45)"/>
+          <circle cx="10" cy="34" r="4.5" fill="#2d0b1e" stroke="#f9a8d4" stroke-width="1.5"/>
+          <circle cx="38" cy="34" r="4.5" fill="#2d0b1e" stroke="#f9a8d4" stroke-width="1.5"/>
+          <circle cx="10" cy="34" r="1.8" fill="#f9a8d4"/>
+          <circle cx="38" cy="34" r="1.8" fill="#f9a8d4"/>
+          <rect x="2" y="17" width="4" height="7" rx="1" fill="#fde68a" opacity="0.9"/>
+          <rect x="42" y="17" width="4" height="7" rx="1" fill="#fca5a5" opacity="0.9"/>
+        </g>
+
+        <!-- AVAILABLE badge -->
+        <rect x="252" y="212" width="86" height="26" rx="6" fill="rgba(74,222,128,0.15)" stroke="rgba(74,222,128,0.4)" stroke-width="1"/>
+        <text x="295" y="229" text-anchor="middle" font-size="10" fill="#4ade80" font-family="Arial,sans-serif" font-weight="700">AVAILABLE ✓</text>
+
+        <!-- Entrance -->
+        <rect x="200" y="268" width="100" height="30" rx="4" fill="rgba(249,115,22,0.2)" stroke="rgba(251,146,60,0.40)" stroke-width="1"/>
+        <text x="250" y="287" text-anchor="middle" font-size="11" fill="#fed7aa" font-family="Arial,sans-serif" font-weight="700" letter-spacing="1.5">ENTRANCE</text>
+
+        <!-- Animated scanning beam -->
+        <line x1="140" y1="0" x2="360" y2="0" stroke="rgba(251,191,36,0.8)" stroke-width="2">
+          <animateTransform attributeName="transform" type="translate" values="0,80;0,298;0,80" dur="4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.7;0" dur="4s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Floating particles around building -->
+        <circle cx="135" cy="160" r="3" fill="#f97316" opacity="0.7">
+          <animate attributeName="cy" values="160;140;160" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="370" cy="200" r="2.5" fill="#fbbf24" opacity="0.6">
+          <animate attributeName="cy" values="200;175;200" dur="4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0.1;0.6" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="250" cy="60" r="2" fill="#fb923c" opacity="0.8">
+          <animate attributeName="cx" values="250;270;250" dur="5s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+
+    <!-- Floating stat cards -->
+    <div class="stat-cards">
+      <div class="stat-card" style="top:-10px;left:-40px;">
+        <div class="stat-ico ic-v">🚗</div>
+        <div class="stat-info">
+          <div class="num">247</div>
+          <div class="lbl">Vehicles Parked</div>
+        </div>
+      </div>
+      <div class="stat-card" style="bottom:10px;right:-35px;">
+        <div class="stat-ico ic-c">⚡</div>
+        <div class="stat-info">
+          <div class="num">98%</div>
+          <div class="lbl">Uptime</div>
+        </div>
+      </div>
+      <div class="stat-card" style="top:42%;left:-55px;">
+        <div class="stat-ico ic-g">✅</div>
+        <div class="stat-info">
+          <div class="num">12</div>
+          <div class="lbl">Free Slots</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feat-item">
+      <div class="feat-ico" style="background:rgba(249,115,22,0.2);border:1px solid rgba(249,115,22,0.35);">🔐</div>
+      <div class="feat-txt">
+        <div class="ft">Lot Management</div>
+        <div class="fs">Control overall parking lot status</div>
+      </div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-ico" style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.28);">📈</div>
+      <div class="feat-txt">
+        <div class="ft">Revenue Dashboard</div>
+        <div class="fs">Live insights and income tracking</div>
+      </div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-ico" style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.25);">⚡</div>
+      <div class="feat-txt">
+        <div class="ft">Instant Booking</div>
+        <div class="fs">Reserve any slot in seconds</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ RIGHT PANEL ════════ -->
+<div class="right">
+  <div class="form-box">
+
+    <div class="form-header">
+      <div class="form-logo">
+        <div class="form-logo-ico">🅿️</div>
+        <div class="form-logo-txt">
+          <div class="name">Partner Portal</div>
+          <div class="role">Parking Lot Management</div>
+        </div>
+      </div>
+      <h2>Welcome Back, Partner</h2>
+      <p>Enter your Owner ID and password to access your dashboard.</p>
+    </div>
+
+    <div id="err-msg" style="display:none;" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="err-txt"></span>
+    </div>
+
+    <form id="login-form" novalidate>
+      <!-- Login ID -->
+      <div class="field">
+        <div class="field-label">
+          <span>Owner ID / Username</span>
+        </div>
+        <div class="inp-wrap">
+          <span class="inp-ico">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <input type="text" id="login-id" placeholder="e.g. OWNER001 or owner_name" autocomplete="username" required/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <div class="field-label">
+          <span>Password</span>
+        </div>
+        <div class="inp-wrap">
+          <span class="inp-ico">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required/>
+          <button type="button" class="eye-btn" id="eye-btn" aria-label="Toggle password">
+            <svg id="eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="login-btn">
+        <div class="btn-inner">
+          <span id="btn-txt">Sign In</span>
+          <svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </button>
+    </form>
+
+    <div class="reg-row" style="line-height:1.6;">
+      Want to partner with us? <a href="Owner Register.html" style="color:#facc15;">Register Parking Lot</a><br>
+      <span style="opacity:0.9;font-size:13px;">Looking for user portal? <a href="Login page.html">Normal Login</a></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+
+/* ── Eye toggle ── */
+const eyeBtn = document.getElementById('eye-btn');
+const passEl = document.getElementById('password');
+let shown = false;
+eyeBtn.addEventListener('click', () => {
+  shown = !shown;
+  passEl.type = shown ? 'text' : 'password';
+  eyeBtn.innerHTML = shown
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+});
+
+/* ── Error / Loading ── */
+const errBox = document.getElementById('err-msg');
+const errTxt = document.getElementById('err-txt');
+const btnEl  = document.getElementById('login-btn');
+const btnTxt = document.getElementById('btn-txt');
+
+function showError(msg) {
+  errTxt.textContent = msg;
+  errBox.style.display = 'flex';
+  errBox.style.animation = 'none';
+  void errBox.offsetWidth;
+  errBox.style.animation = 'shake .4s ease';
+}
+function hideError() { errBox.style.display = 'none'; }
+function setLoading(s) {
+  btnEl.disabled = s;
+  btnEl.querySelector('.btn-inner').innerHTML = s
+    ? '<span class="spinner"></span><span>Signing in…</span>'
+    : '<span>Sign In</span><svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+}
+
+/* ── Form submit ── */
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault(); hideError();
+  const loginId  = document.getElementById('login-id').value.trim();
+  const password = passEl.value;
+  if (!loginId)  { document.getElementById('login-id').focus(); showError('Please enter your Login ID.'); return; }
+  if (!password) { passEl.focus(); showError('Please enter your password.'); return; }
+
+  setLoading(true);
+  try {
+    const res  = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ loginId, password })
+    });
+    const data = await res.json();
+    if (!data.success) { showError(data.message || 'Invalid credentials.'); setLoading(false); return; }
+    sessionStorage.setItem('cp_token',   data.token);
+    sessionStorage.setItem('cp_session', JSON.stringify({ ...data.user, role: data.role }));
+    switch(data.role) {
+      case 'admin':         window.location.href = 'Admin page.html'; break;
+      case 'parking_owner': window.location.href = 'Owner page.html'; break;
+      case 'user':          window.location.href = 'User Dashboard.html'; break;
+    }
+  } catch {
+    showError('Cannot connect to server. Make sure the backend is running on port 5000.');
+    setLoading(false);
+  }
+});
+
+document.getElementById('login-id').focus();
+</script>
+</body>
+</html>
