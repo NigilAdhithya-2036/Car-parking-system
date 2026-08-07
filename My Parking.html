@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ParkMatrix – My Parking</title>
+<meta name="description" content="View your active parking sessions and parking history."/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#08080a;--bg2:#111113;--surface:#18181b;--border:#27272a;
+  --primary:#f97316;--primary2:#fb923c;--accent:#fbbf24;
+  --green:#4ade80;--cyan:#22d3ee;--pink:#f472b6;
+  --txt:#f8fafc;--muted:#71717a;--muted2:#a1a1aa;
+  --card:rgba(24,24,27,0.8);
+  --glow:rgba(249,115,22,0.18);
+}
+html,body{overflow-x:hidden;}
+body{
+  font-family:'Outfit',sans-serif;
+  color:var(--txt);
+  display:flex;flex-direction:column;min-height:100vh;
+  background: url('background.jpg') center center/cover no-repeat fixed;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8, 8, 10, 0.85);
+  z-index: -1;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:#52525b;}
+
+/* ─── NAVBAR ─── */
+.navbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:64px;
+  background:rgba(8,8,10,0.85);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:200;
+}
+.nav-left{display:flex;align-items:center;gap:1rem;}
+.logo{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  box-shadow:0 0 16px rgba(249,115,22,0.5);
+  cursor:pointer;flex-shrink:0;
+}
+.brand{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px;}
+.brand span{background:linear-gradient(90deg,#fff,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-btn{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  color:var(--muted2);padding:0.5rem 1rem;border-radius:9px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:0.5rem;font-family:inherit;font-size:0.9rem;
+  text-decoration:none;
+}
+.nav-btn:hover{background:rgba(255,255,255,0.08);color:var(--txt);}
+.avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(249,115,22,0.3),rgba(251,191,36,0.2));
+  border:1.5px solid rgba(249,115,22,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:var(--primary);font-size:1rem;cursor:pointer;
+  transition:border-color .2s,box-shadow .2s;
+}
+.avatar:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(249,115,22,0.15);}
+
+/* ─── MAIN LAYOUT ─── */
+.main{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  gap:0;
+  flex:1;
+  max-width:1200px;
+  margin:0 auto;width:100%;
+}
+
+/* ─── LEFT NAV ─── */
+.left-nav{
+  border-right:1px solid rgba(255,255,255,0.05);
+  padding:1.5rem 1rem;
+  display:flex;flex-direction:column;gap:0.3rem;
+  position:sticky;top:64px;height:calc(100vh - 64px);
+  overflow-y:auto;
+}
+.nav-item{
+  display:flex;align-items:center;gap:0.85rem;
+  padding:0.7rem 1rem;border-radius:10px;
+  cursor:pointer;font-weight:600;font-size:0.95rem;
+  color:var(--muted2);transition:all .2s;
+  text-decoration:none;
+}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:var(--txt);}
+.nav-item.active{background:rgba(249,115,22,0.12);color:var(--primary);border:1px solid rgba(249,115,22,0.2);}
+.nav-item .ni{font-size:1.2rem;}
+.nav-section-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;padding:1rem 1rem 0.4rem;margin-top:0.5rem;}
+.nav-chip{background:rgba(249,115,22,0.2);color:var(--primary);font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:99px;}
+
+/* ─── CENTER CONTENT ─── */
+.center-content{padding:2.5rem; display: flex; flex-direction: column; gap: 2rem;}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.5rem;
+}
+.page-subtitle {
+  color: var(--muted2);
+  font-size: 1.05rem;
+}
+
+/* Active Session Card */
+.active-session-card {
+  background: linear-gradient(135deg, rgba(24,24,27,0.9), rgba(12,12,14,0.95));
+  border: 1px solid rgba(249,115,22,0.3);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(249,115,22,0.15);
+  position: relative;
+  overflow: hidden;
+}
+.active-session-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+.asc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.asc-title {
+  font-size: 1.3rem; font-weight: 800;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.asc-badge {
+  background: rgba(74,222,128,0.2); color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.4);
+  padding: 0.3rem 0.8rem; border-radius: 99px;
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(74,222,128,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
+.asc-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+}
+.asc-item {
+  display: flex; flex-direction: column; gap: 0.3rem;
+}
+.asc-item .lbl { color: var(--muted2); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
+.asc-item .val { font-size: 1.4rem; font-weight: 700; color: #fff; }
+.asc-actions {
+  margin-top: 2rem; display: flex; gap: 1rem;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #1a0600; padding: 0.7rem 1.5rem; border: none; border-radius: 10px;
+  font-weight: 800; font-size: 1rem; cursor: pointer; font-family: inherit;
+  box-shadow: 0 4px 16px rgba(249,115,22,0.35); transition: transform .2s, box-shadow .2s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(249,115,22,0.5); }
+.btn-outline {
+  background: rgba(255,255,255,0.05); color: #fff; padding: 0.7rem 1.5rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+  font-weight: 600; font-size: 1rem; cursor: pointer; font-family: inherit; transition: all .2s;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+/* History List */
+.history-section h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+.history-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1rem;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: transform .2s, border-color .2s;
+}
+.history-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.15); }
+.hc-left { display: flex; align-items: center; gap: 1.2rem; }
+.hc-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--primary);
+}
+.hc-details h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.2rem; }
+.hc-details p { font-size: 0.9rem; color: var(--muted2); }
+.hc-right { text-align: right; }
+.hc-price { font-size: 1.2rem; font-weight: 800; color: var(--green); }
+.hc-date { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;}
+  .left-nav{display:none;}
+  .asc-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo">🅿️</div>
+    <div class="brand">Park<span>Matrix</span></div>
+  </div>
+  <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div class="avatar" id="navAvatar">U</div>
+      <div style="line-height:1.2;">
+        <div style="font-weight:700;font-size:0.95rem;" id="navName">User</div>
+        <div style="font-size:0.75rem;color:var(--muted);" id="navRole">Member</div>
+      </div>
+    </div>
+    <a href="Login page.html" class="nav-btn" onclick="logout()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </a>
+  </div>
+</nav>
+
+<div class="main">
+  <!-- LEFT NAV -->
+  <aside class="left-nav">
+    <div class="nav-section-title">Menu</div>
+    <a class="nav-item" href="Home.html">
+      <span class="ni">🏠</span> Home Feed
+    </a>
+    <a class="nav-item" href="Profile.html">
+      <span class="ni">👤</span> My Profile
+    </a>
+    <a class="nav-item active" href="My Parking.html">
+      <span class="ni">🚗</span> My Parking
+    </a>
+  </aside>
+
+  <!-- CENTER CONTENT -->
+  <div class="center-content">
+    <div>
+      <h1 class="page-title">My Parking</h1>
+      <p class="page-subtitle">Manage your current sessions and view your parking history.</p>
+    </div>
+
+    <!-- Active Session Widget -->
+    <div id="activeSessionContainer">
+      <!-- Active session will be rendered here -->
+    </div>
+
+    <!-- Parking History -->
+    <div class="history-section" id="historyContainer">
+      <h3>📜 Recent History</h3>
+      <!-- History will be rendered here -->
+    </div>
+
+  </div>
+</div>
+
+<script src="database.js"></script>
+<script>
+  // Auth guard
+  const session = requireLogin(['user', 'admin']);
+  if (session) {
+    document.getElementById('navName').textContent = session.full_name || session.username;
+    document.getElementById('navAvatar').textContent = (session.full_name || session.username)[0].toUpperCase();
+    document.getElementById('navRole').textContent = session.vehicle_number || 'Member';
+  }
+  
+  function logout() {
+    clearSession();
+  }
+
+  async function fetchMyBookings() {
+    const token = sessionStorage.getItem('cp_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch('http://localhost:5000/api/bookings/user', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        renderBookings(data.bookings);
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  function renderBookings(bookings) {
+    const activeContainer = document.getElementById('activeSessionContainer');
+    const historyContainer = document.getElementById('historyContainer');
+    
+    const active = bookings.filter(b => b.status === 'active');
+    const history = bookings.filter(b => b.status !== 'active');
+
+    if (active.length > 0) {
+      const b = active[0];
+      const lotName = b.owner_id ? b.owner_id.lot_name : 'Parking Lot';
+      
+      activeContainer.innerHTML = `
+        <div class="active-session-card">
+          <div class="asc-header">
+            <div class="asc-title"><span>🕒</span> Active Session</div>
+            <div class="asc-badge">Ongoing</div>
+          </div>
+          <div class="asc-grid">
+            <div class="asc-item"><div class="lbl">Location</div><div class="val">${lotName}</div></div>
+            <div class="asc-item"><div class="lbl">Slot ID</div><div class="val">${b.slot_id}</div></div>
+            <div class="asc-item"><div class="lbl">Booked At</div><div class="val">${new Date(b.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div></div>
+            <div class="asc-item"><div class="lbl">Current Cost</div><div class="val" style="color:var(--primary);">₹50</div></div>
+          </div>
+          <div class="asc-actions">
+            <button class="btn-primary" onclick="alert('Proceeding to Checkout...')">End Session & Pay</button>
+            <button class="btn-outline">Extend Time</button>
+          </div>
+        </div>
+      `;
+    } else {
+      activeContainer.innerHTML = `
+        <div class="active-session-card" style="text-align:center; padding:3rem;">
+          <h3 style="margin-bottom:1rem; color:var(--muted2);">No Active Session</h3>
+          <button class="btn-primary" onclick="window.location.href='Reserve Slot.html'">Reserve a Slot Now</button>
+        </div>
+      `;
+    }
+
+    historyContainer.innerHTML = '<h3>📜 Recent History</h3>';
+    if (history.length === 0) {
+      historyContainer.innerHTML += '<div style="color:var(--muted); padding:2rem 0;">No previous parking history found.</div>';
+    } else {
+      history.forEach(b => {
+        const lotName = b.owner_id ? b.owner_id.lot_name : 'Parking Lot';
+        historyContainer.innerHTML += `
+          <div class="history-card">
+            <div class="hc-left">
+              <div class="hc-icon">🏢</div>
+              <div class="hc-details">
+                <h4>${lotName}</h4>
+                <p>Slot ${b.slot_id} • ${new Date(b.createdAt).toLocaleDateString()}</p>
+              </div>
+            </div>
+            <div class="hc-right">
+              <div class="hc-price">₹--</div>
+              <div class="hc-date">${b.status}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  fetchMyBookings();
+</script>
+</body>
+</html>

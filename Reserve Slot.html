@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserve Slot - ParkMatrix</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+        --bg: #09090b; --surface: #18181b; --border: #27272a;
+        --primary: #f97316; --green: #4ade80;
+        --text-main: #f8fafc; --text-muted: #a1a1aa;
+    }
+    body {
+        font-family: 'Outfit', sans-serif;
+        background-color: var(--bg);
+        color: var(--text-main);
+        min-height: 100vh;
+        background-image: 
+            radial-gradient(ellipse at 15% 50%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+            radial-gradient(ellipse at 85% 30%, rgba(74, 222, 128, 0.05) 0%, transparent 40%);
+        padding: 2rem;
+    }
+    .container {
+        max-width: 600px; margin: 0 auto;
+        background: var(--surface); padding: 2.5rem;
+        border-radius: 16px; border: 1px solid var(--border);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header h1 { font-size: 2rem; font-weight: 800; color: var(--green); }
+    .header p { color: var(--text-muted); margin-top: 0.5rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted); }
+    select {
+        width: 100%; padding: 0.9rem; border-radius: 8px;
+        background: #09090b; border: 1px solid rgba(255,255,255,0.1);
+        color: white; font-family: 'Outfit', sans-serif; font-size: 1rem;
+    }
+    select:focus { outline: none; border-color: var(--green); }
+    
+    .btn-reserve {
+        width: 100%; padding: 1rem; border-radius: 8px;
+        background: var(--green); color: #000; font-weight: 800;
+        font-size: 1.1rem; border: none; cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s; font-family: inherit;
+        margin-top: 1rem;
+    }
+    .btn-reserve:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(74,222,128,0.3); }
+    .btn-reserve:disabled { background: #3f3f46; color: #a1a1aa; cursor: not-allowed; box-shadow: none; transform: none; }
+    
+    .nav-back { color: var(--text-muted); text-decoration: none; display: inline-block; margin-bottom: 1.5rem; }
+    .nav-back:hover { color: var(--primary); }
+
+    .toast {
+        position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+        background: #18181b; border: 1px solid rgba(74,222,128,0.3);
+        color: #4ade80; border-radius: 12px; padding: 0.9rem 1.5rem;
+        font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        display: none; align-items: center; gap: 0.6rem;
+    }
+    .toast.error { border-color: rgba(248,113,113,0.3); color: #f87171; }
+</style>
+</head>
+<body>
+
+<div style="max-width: 600px; margin: 0 auto;">
+    <a href="Home.html" class="nav-back">← Back to Dashboard</a>
+</div>
+<div class="container">
+    <div class="header">
+        <h1>Reserve a Slot</h1>
+        <p>Select an available slot below to instantly confirm your reservation.</p>
+    </div>
+
+    <div class="form-group">
+        <label>Available Slots</label>
+        <select id="slotSelect">
+            <option value="">Loading available slots...</option>
+        </select>
+    </div>
+    
+    <div class="form-group" style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span style="color:var(--text-muted)">Pricing</span>
+            <strong id="dynamicPrice">Loading...</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <span style="color:var(--text-muted)">Billing</span>
+            <strong>Pay at Exit</strong>
+        </div>
+    </div>
+
+    <button class="btn-reserve" id="reserveBtn" onclick="confirmReservation()">Complete Reservation</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let availableSlots = [];
+const token = sessionStorage.getItem('cp_token');
+
+if (!token) {
+    window.location.href = 'Login page.html';
+}
+
+function showToast(msg, isError=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'flex';
+    t.className = 'toast ' + (isError ? 'error' : '');
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+async function fetchSlots() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const parkingId = urlParams.get('parkingId');
+
+    try {
+        if (parkingId) {
+            const res = await fetch(`http://localhost:5000/api/owners/lot/${parkingId}`);
+            const data = await res.json();
+            
+            if (data.success && data.lot) {
+                document.getElementById('dynamicPrice').textContent = `₹${data.lot.pricePerHour || 50} / Hour`;
+                availableSlots = data.lot.slots.filter(s => s.status === 'available');
+                const select = document.getElementById('slotSelect');
+                if (availableSlots.length === 0) {
+                    select.innerHTML = '<option value="">No slots currently available</option>';
+                    document.getElementById('reserveBtn').disabled = true;
+                } else {
+                    select.innerHTML = availableSlots.map(s => 
+                        `<option value="${s.id}" data-owner="${data.lot._id}">Slot ${s.id} (${data.lot.lot_name || 'Parking Lot'})</option>`
+                    ).join('');
+                    document.getElementById('reserveBtn').disabled = false;
+                }
+            } else {
+                throw new Error('Lot not found');
+            }
+        } else {
+            const res = await fetch('http://localhost:5000/api/slots');
+            const data = await res.json();
+            if (data.success && data.slots) {
+                availableSlots = data.slots.filter(s => s.status === 'available');
+                const select = document.getElementById('slotSelect');
+                if (availableSlots.length === 0) {
+                    select.innerHTML = '<option value="">No slots currently available</option>';
+                    document.getElementById('dynamicPrice').textContent = '—';
+                    document.getElementById('reserveBtn').disabled = true;
+                } else {
+                    select.innerHTML = availableSlots.map(s => 
+                        `<option value="${s.id}" data-owner="${s.owner_id}" data-price="${s.pricePerHour || 50}">Slot ${s.id} - ${s.lot_name || 'Parking Lot'}</option>`
+                    ).join('');
+                    document.getElementById('reserveBtn').disabled = false;
+                    
+                    const updateDynamicPrice = () => {
+                        const selectedOption = select.options[select.selectedIndex];
+                        if (selectedOption) {
+                            const price = selectedOption.getAttribute('data-price') || 50;
+                            document.getElementById('dynamicPrice').textContent = `₹${price} / Hour`;
+                        }
+                    };
+                    updateDynamicPrice();
+                    select.addEventListener('change', updateDynamicPrice);
+                }
+            } else {
+                throw new Error('Error fetching slots');
+            }
+        }
+    } catch(err) {
+        document.getElementById('slotSelect').innerHTML = '<option value="">Error loading slots</option>';
+        document.getElementById('dynamicPrice').textContent = '—';
+        document.getElementById('reserveBtn').disabled = true;
+    }
+}
+
+async function confirmReservation() {
+    const select = document.getElementById('slotSelect');
+    const selectedOption = select.options[select.selectedIndex];
+    
+    if (!selectedOption || !selectedOption.value) {
+        showToast('Please select a slot', true);
+        return;
+    }
+    
+    const slotId = selectedOption.value;
+    const ownerId = selectedOption.getAttribute('data-owner');
+    
+    const btn = document.getElementById('reserveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Reserving...';
+    
+    try {
+        const res = await fetch('http://localhost:5000/api/bookings/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ slot_id: slotId, owner_id: ownerId })
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            showToast('Slot reserved successfully!');
+            setTimeout(() => {
+                window.location.href = 'My Parking.html';
+            }, 1000);
+        } else {
+            showToast(data.message || 'Error booking slot', true);
+            btn.disabled = false;
+            btn.textContent = 'Complete Reservation';
+        }
+    } catch(err) {
+        showToast('Network error', true);
+        btn.disabled = false;
+        btn.textContent = 'Complete Reservation';
+    }
+}
+
+fetchSlots();
+</script>
+</body>
+</html>

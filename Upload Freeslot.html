@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Slots – Car Parking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #09090b; --surface: #18181b; --border: #27272a;
+            --primary: #f97316; --primary-hover: #ea580c; --accent: #fbbf24;
+            --text-main: #f8fafc; --text-muted: #a1a1aa;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 15% 50%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 85% 30%, rgba(251, 191, 36, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        /* Top Navigation */
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 2rem; background: rgba(9, 9, 11, 0.7);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 1rem; }
+        .logo-box {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; font-weight: 800; color: #000;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+        }
+        .brand-name { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+        .user-widget { display: flex; align-items: center; gap: 0.75rem; }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--primary);
+        }
+        .user-info .name { font-size: 0.95rem; font-weight: 600; }
+        .user-info .role { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171; padding: 0.5rem 1rem; border-radius: 8px;
+            font-weight: 500; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.5rem; font-family: inherit;
+        }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); transform: translateY(-1px); }
+
+        /* Main Container */
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .page-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-content h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 0.5rem; }
+        .header-content p { color: var(--text-muted); font-size: 1.1rem; }
+        
+        .nav-back { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; transition: color 0.2s; }
+        .nav-back:hover { color: var(--primary); }
+
+        /* Slots Grid */
+        .card-panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .wid-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .wid-title { font-weight: 700; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .live-dot { width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; animation: livePulse 2s infinite; }
+        @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .wid-badge { background: #7c2d12; color: #f97316; font-size: 0.9rem; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 99px; }
+
+        .slot-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;
+        }
+        
+        /* The exact sleek card theme requested */
+        .slot-card-mini {
+            background: #1a1b1e; border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px; padding: 1.5rem 1rem; text-align: center;
+            transition: all 0.2s; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .slot-card-mini:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        .slot-card-mini.available { border-color: rgba(74,222,128,0.4); background: linear-gradient(180deg, #18201a 0%, #151816 100%); }
+        .slot-card-mini.occupied { border-color: rgba(248,113,113,0.3); background: linear-gradient(180deg, #201819 0%, #171515 100%); }
+        .slot-card-mini .snum { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.4rem; }
+        .slot-card-mini .slbl { font-size: 0.85rem; color: #71717a; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .slot-card-mini.available .snum { color: #4ade80; }
+        .slot-card-mini.occupied .snum { color: #f87171; }
+        
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+            background: #18181b; border: 1px solid rgba(74,222,128,0.3);
+            color: #4ade80; border-radius: 12px; padding: 0.9rem 1.5rem;
+            font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 0.6rem;
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.3s ease; pointer-events: none;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { border-color: rgba(248,113,113,0.3); color: #f87171; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <div class="logo-box">🅿️</div>
+        <div class="brand-name">ParkMatrix</div>
+    </div>
+    <div class="nav-right">
+        <div class="user-widget">
+            <div class="avatar" id="avatarLetter">O</div>
+            <div class="user-info">
+                <div class="name" id="userName">Owner</div>
+                <div class="role">Parking Owner</div>
+            </div>
+        </div>
+        <button class="btn-logout" onclick="logout()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+    <a href="Owner page.html" class="nav-back">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Dashboard
+    </a>
+    
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Manage Slots</h1>
+            <p>Click on a slot to toggle its status between OPEN and OCCUPIED in real time.</p>
+        </div>
+    </div>
+
+    <div class="card-panel">
+        <div class="wid-head">
+            <div class="wid-title">
+                <div class="live-dot"></div> Live Slots Overview
+            </div>
+            <div class="wid-badge" id="freeBadge">Loading...</div>
+        </div>
+        
+        <div class="slot-grid" id="slotGrid">
+            <div style="color:var(--text-muted); text-align:center; grid-column: 1 / -1; padding: 2rem;">Loading slots...</div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const token = sessionStorage.getItem('cp_token');
+let currentSlots = [];
+
+if (!token) {
+    window.location.href = 'Owner Login.html';
+}
+
+function showToast(msg, isError=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (isError ? 'error' : '');
+    setTimeout(() => t.className = 'toast', 3000);
+}
+
+function logout() {
+    sessionStorage.removeItem('cp_token');
+    window.location.href = 'Owner Login.html';
+}
+
+async function fetchSlots() {
+    try {
+        const res = await fetch('http://localhost:5000/api/owners/my-slots', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+            currentSlots = data.slots;
+            renderSlots();
+        } else {
+            showToast(data.message || 'Error fetching slots', true);
+        }
+    } catch (err) {
+        showToast('Failed to connect to server', true);
+    }
+}
+
+async function toggleSlot(slotId, currentStatus) {
+    const newStatus = currentStatus === 'available' ? 'occupied' : 'available';
+    try {
+        const res = await fetch('http://localhost:5000/api/owners/update-slot', {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ slot_id: slotId, status: newStatus })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            currentSlots = data.slots;
+            renderSlots();
+            showToast(`Slot ${slotId} is now ${newStatus.toUpperCase()}`);
+        } else {
+            showToast(data.message || 'Error updating slot', true);
+        }
+    } catch (err) {
+        showToast('Failed to connect to server', true);
+    }
+}
+
+function renderSlots() {
+    const grid = document.getElementById('slotGrid');
+    const freeCount = currentSlots.filter(s => s.status === 'available').length;
+    document.getElementById('freeBadge').textContent = `${freeCount} Free`;
+    
+    if (!currentSlots.length) {
+        grid.innerHTML = '<div style="color:var(--text-muted); text-align:center; grid-column: 1 / -1; padding: 2rem;">No slots found.</div>';
+        return;
+    }
+
+    grid.innerHTML = currentSlots.map(s => `
+        <div class="slot-card-mini ${s.status}" onclick="toggleSlot('${s.id}', '${s.status}')">
+            <div class="snum">${s.status === 'available' ? s.id : '🚗'}</div>
+            <div class="slbl">${s.status === 'available' ? 'OPEN' : 'OCCUPIED'}</div>
+        </div>
+    `).join('');
+}
+
+// Initialize
+fetchSlots();
+</script>
+</body>
+</html>

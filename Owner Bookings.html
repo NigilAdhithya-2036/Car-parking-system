@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Users (Bookings) – Car Parking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #09090b; --surface: #18181b; --border: #27272a;
+            --primary: #f97316; --accent: #fbbf24;
+            --text-main: #f8fafc; --text-muted: #a1a1aa;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 15% 50%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 85% 30%, rgba(251, 191, 36, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+        /* Top Navigation */
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 2rem; background: rgba(9, 9, 11, 0.7);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 1rem; }
+        .logo-box {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; font-weight: 800; color: #000;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+        }
+        .brand-name { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+        .user-widget { display: flex; align-items: center; gap: 0.75rem; }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--primary);
+        }
+        .user-info .name { font-size: 0.95rem; font-weight: 600; }
+        .user-info .role { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171; padding: 0.5rem 1rem; border-radius: 8px;
+            font-weight: 500; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.5rem; font-family: inherit;
+        }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); transform: translateY(-1px); }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .nav-back { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; transition: color 0.2s; }
+        .nav-back:hover { color: var(--primary); }
+
+        .page-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-content h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 0.5rem; }
+        .header-content p { color: var(--text-muted); font-size: 1.1rem; }
+
+        .card-panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 1.2rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+        .slot-badge {
+            background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3);
+            padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 800; font-size: 0.85rem;
+            display: inline-block;
+        }
+        .user-name { font-weight: 600; font-size: 1rem; color: #fff; }
+        .user-contact { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+        .veh-num { font-family: monospace; font-size: 1rem; background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
+        .status-badge {
+            font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 99px;
+            background: rgba(56, 189, 248, 0.15); color: #38bdf8; text-transform: uppercase;
+        }
+        
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+            background: #18181b; border: 1px solid rgba(248,113,113,0.3);
+            color: #f87171; border-radius: 12px; padding: 0.9rem 1.5rem;
+            font-weight: 600; transform: translateY(20px); opacity: 0;
+            transition: all 0.3s ease; pointer-events: none;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <div class="logo-box">🅿️</div>
+        <div class="brand-name">ParkMatrix</div>
+    </div>
+    <div class="nav-right">
+        <div class="user-widget">
+            <div class="avatar">O</div>
+            <div class="user-info">
+                <div class="name">Owner</div>
+                <div class="role">Parking Owner</div>
+            </div>
+        </div>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+</nav>
+
+<div class="container">
+    <a href="Owner page.html" class="nav-back">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Dashboard
+    </a>
+    
+    <div class="page-header">
+        <div class="header-content">
+            <h1>My Users (Bookings)</h1>
+            <p>See exactly who has booked your slots.</p>
+        </div>
+    </div>
+
+    <div class="card-panel" style="padding: 0;">
+        <table id="bookingsTable">
+            <thead>
+                <tr>
+                    <th>Slot</th>
+                    <th>User Details</th>
+                    <th>Vehicle Number</th>
+                    <th>Booked At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="bookingsBody">
+                <tr><td colspan="5" class="empty-state">Loading bookings...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const token = sessionStorage.getItem('cp_token');
+if (!token) window.location.href = 'Owner Login.html';
+
+function logout() {
+    sessionStorage.removeItem('cp_token');
+    window.location.href = 'Owner Login.html';
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function fetchBookings() {
+    try {
+        const res = await fetch('http://localhost:5000/api/bookings/owner', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        const tbody = document.getElementById('bookingsBody');
+        
+        if (res.ok) {
+            if (data.bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No users have booked your slots yet.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = data.bookings.map(b => `
+                <tr>
+                    <td><div class="slot-badge">${b.slot_id}</div></td>
+                    <td>
+                        <div class="user-name">${b.user_id ? b.user_id.full_name : 'Unknown User'}</div>
+                        <div class="user-contact">${b.user_id ? b.user_id.phone || b.user_id.email : ''}</div>
+                    </td>
+                    <td><span class="veh-num">${b.user_id ? b.user_id.vehicle_number : 'N/A'}</span></td>
+                    <td style="color:var(--text-muted); font-size:0.9rem;">${new Date(b.createdAt).toLocaleString()}</td>
+                    <td><span class="status-badge">${b.status}</span></td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Failed to load bookings</td></tr>';
+            showToast(data.message || 'Error fetching bookings');
+        }
+    } catch(err) {
+        document.getElementById('bookingsBody').innerHTML = '<tr><td colspan="5" class="empty-state">Network Error</td></tr>';
+        showToast('Failed to connect to server');
+    }
+}
+
+fetchBookings();
+</script>
+</body>
+</html>

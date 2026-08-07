@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ParkMatrix – Home</title>
+<meta name="description" content="Your real-time car parking community hub. View free slots, announcements, and connect with other parkers."/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#08080a;--bg2:#111113;--surface:#18181b;--border:#27272a;
+  --primary:#f97316;--primary2:#fb923c;--accent:#fbbf24;
+  --green:#4ade80;--cyan:#22d3ee;--pink:#f472b6;
+  --txt:#f8fafc;--muted:#71717a;--muted2:#a1a1aa;
+  --card:rgba(24,24,27,0.8);
+  --glow:rgba(249,115,22,0.18);
+}
+html,body{overflow-x:hidden;}
+body{
+  font-family:'Outfit',sans-serif;
+  color:var(--txt);
+  display:flex;flex-direction:column;min-height:100vh;
+  background: url('background.jpg') center center/cover no-repeat fixed;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8, 8, 10, 0.85);
+  z-index: -1;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:#52525b;}
+
+/* ─── NAVBAR ─── */
+.navbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:64px;
+  background:rgba(8,8,10,0.85);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:200;
+}
+.nav-left{display:flex;align-items:center;gap:1rem;}
+.logo{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  box-shadow:0 0 16px rgba(249,115,22,0.5);
+  cursor:pointer;flex-shrink:0;
+}
+.brand{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px;}
+.brand span{background:linear-gradient(90deg,#fff,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+.nav-center{flex:1;display:flex;justify-content:center;}
+.search-wrap{position:relative;width:100%;max-width:380px;}
+.search-wrap input{
+  width:100%;padding:0.55rem 1rem 0.55rem 2.75rem;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;color:var(--txt);font-family:inherit;font-size:0.95rem;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.search-wrap input:focus{border-color:rgba(249,115,22,0.4);box-shadow:0 0 0 3px rgba(249,115,22,0.08);}
+.search-wrap input::placeholder{color:var(--muted);}
+.search-ico{position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);opacity:0.4;}
+
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-btn{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  color:var(--muted2);padding:0.5rem 1rem;border-radius:9px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:0.5rem;font-family:inherit;font-size:0.9rem;
+  text-decoration:none;
+}
+.nav-btn:hover{background:rgba(255,255,255,0.08);color:var(--txt);}
+.avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(249,115,22,0.3),rgba(251,191,36,0.2));
+  border:1.5px solid rgba(249,115,22,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:var(--primary);font-size:1rem;cursor:pointer;
+  transition:border-color .2s,box-shadow .2s;
+}
+.avatar:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(249,115,22,0.15);}
+
+/* ─── HERO STATS BAR ─── */
+.stats-bar{
+  display:flex;gap:0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  background:rgba(12,12,14,0.9);
+  overflow-x:auto;
+}
+.stat-item{
+  flex:1;min-width:180px;
+  display:flex;align-items:center;gap:1rem;
+  padding:1.2rem 2rem;
+  border-right:1px solid rgba(255,255,255,0.05);
+  transition:background .2s;
+}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:rgba(249,115,22,0.04);}
+.stat-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
+}
+.si-orange{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.25);}
+.si-green{background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.25);}
+.si-cyan{background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.25);}
+.si-pink{background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.25);}
+.stat-info .val{font-size:1.5rem;font-weight:800;line-height:1;}
+.stat-info .lbl{font-size:0.78rem;color:var(--muted);margin-top:3px;font-weight:500;letter-spacing:0.3px;}
+.stat-info .change{font-size:0.78rem;font-weight:600;margin-top:4px;}
+.change.up{color:var(--green);}
+.change.dn{color:#f87171;}
+
+/* ─── MAIN LAYOUT ─── */
+.main{
+  display:grid;
+  grid-template-columns:240px 1fr 320px;
+  gap:0;
+  flex:1;
+  max-width:1600px;
+  margin:0 auto;width:100%;
+}
+
+/* ─── LEFT NAV ─── */
+.left-nav{
+  border-right:1px solid rgba(255,255,255,0.05);
+  padding:1.5rem 1rem;
+  display:flex;flex-direction:column;gap:0.3rem;
+  position:sticky;top:64px;height:calc(100vh - 64px);
+  overflow-y:auto;
+}
+.nav-item{
+  display:flex;align-items:center;gap:0.85rem;
+  padding:0.7rem 1rem;border-radius:10px;
+  cursor:pointer;font-weight:600;font-size:0.95rem;
+  color:var(--muted2);transition:all .2s;
+  text-decoration:none;
+}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:var(--txt);}
+.nav-item.active{background:rgba(249,115,22,0.12);color:var(--primary);border:1px solid rgba(249,115,22,0.2);}
+.nav-item .ni{font-size:1.2rem;}
+.nav-section-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;padding:1rem 1rem 0.4rem;margin-top:0.5rem;}
+.nav-chip{background:rgba(249,115,22,0.2);color:var(--primary);font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:99px;}
+
+/* ─── CENTER FEED ─── */
+.center-feed{border-right:1px solid rgba(255,255,255,0.05);padding:2rem;}
+
+/* Create Post */
+.create-post{
+  background:var(--card);border:1px solid rgba(249,115,22,0.2);
+  border-radius:16px;padding:1.5rem;margin-bottom:2rem;
+  box-shadow:0 0 30px rgba(249,115,22,0.07);
+}
+.create-post-head{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+.cp-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(249,115,22,0.3),rgba(251,191,36,0.2));
+  border:1.5px solid rgba(249,115,22,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:var(--primary);font-size:1rem;flex-shrink:0;
+}
+.cp-input{
+  flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:0.9rem 1.2rem;
+  color:var(--txt);font-family:inherit;font-size:1rem;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+  resize:none;line-height:1.5;
+}
+.cp-input:focus{border-color:rgba(249,115,22,0.4);box-shadow:0 0 0 3px rgba(249,115,22,0.07);}
+.cp-input::placeholder{color:var(--muted);}
+.cp-actions{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;}
+.cp-tags{display:flex;gap:0.5rem;}
+.cp-tag{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:var(--muted2);padding:0.4rem 0.9rem;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.cp-tag:hover{border-color:rgba(249,115,22,0.3);color:var(--primary);}
+.btn-post{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#1a0600;padding:0.6rem 1.5rem;border:none;border-radius:9px;
+  font-weight:800;font-size:0.95rem;cursor:pointer;font-family:inherit;
+  box-shadow:0 4px 16px rgba(249,115,22,0.35);
+  transition:transform .2s,box-shadow .2s;
+}
+.btn-post:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(249,115,22,0.5);}
+
+/* Feed Tabs */
+.feed-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:1.5rem;}
+.ftab{
+  padding:0.7rem 1.5rem;font-weight:700;font-size:0.95rem;cursor:pointer;
+  color:var(--muted);border-bottom:2px solid transparent;
+  transition:all .2s;
+}
+.ftab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.ftab:hover{color:var(--muted2);}
+
+/* Feed Cards */
+.feed-card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+  animation:cardIn .4s ease both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.feed-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.5);border-color:rgba(255,255,255,0.11);}
+
+.fc-head{display:flex;align-items:center;gap:0.9rem;margin-bottom:1rem;}
+.fc-avatar{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:1.05rem;flex-shrink:0;
+}
+.fc-info .name{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:0.5rem;}
+.fc-info .meta{font-size:0.8rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:0.5rem;}
+.fc-type{
+  display:inline-block;padding:0.2rem 0.6rem;border-radius:6px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+}
+.t-update{background:rgba(34,211,238,0.12);color:var(--cyan);}
+.t-alert{background:rgba(248,113,113,0.12);color:#fca5a5;}
+.t-slot{background:rgba(74,222,128,0.12);color:var(--green);}
+.t-general{background:rgba(161,161,170,0.12);color:var(--muted2);}
+
+.fc-body{font-size:1rem;line-height:1.65;color:#d4d4d8;margin-bottom:1.2rem;}
+.slot-highlight{
+  display:flex;align-items:center;gap:1rem;
+  background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.2);
+  border-radius:12px;padding:1rem 1.2rem;margin:0.8rem 0;
+}
+.slot-num{font-size:2.2rem;font-weight:900;color:var(--green);line-height:1;}
+.slot-label{font-size:0.85rem;color:var(--muted2);}
+.slot-label strong{display:block;color:var(--green);font-size:1rem;}
+
+.fc-actions{display:flex;gap:1.5rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);}
+.act-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;gap:0.45rem;
+  font-family:inherit;font-size:0.9rem;font-weight:600;
+  transition:color .2s;padding:0.3rem;border-radius:6px;
+}
+.act-btn:hover{color:var(--primary);}
+.act-btn.liked{color:var(--primary);}
+
+/* Separator */
+.feed-sep{text-align:center;margin:0 0 1.5rem;font-size:0.82rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:1rem;}
+.feed-sep::before,.feed-sep::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.05);}
+
+/* ─── RIGHT SIDEBAR ─── */
+.right-sidebar{padding:2rem 1.5rem;display:flex;flex-direction:column;gap:2rem;overflow-y:auto;position:sticky;top:64px;height:calc(100vh - 64px);}
+
+/* Sidebar Widget */
+.widget{background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;}
+.wid-head{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.3rem;border-bottom:1px solid rgba(255,255,255,0.05);}
+.wid-title{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:0.5rem;}
+.wid-badge{background:#7c2d12;color:#f97316;font-size:0.8rem;font-weight:800;padding:0.25rem 0.75rem;border-radius:99px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:livePulse 2s infinite;}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* Announcement items in sidebar */
+.ann-item{padding:1.1rem 1.3rem;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .2s;}
+.ann-item:last-child{border-bottom:none;}
+.ann-item:hover{background:rgba(255,255,255,0.02);}
+.ann-bar{width:3px;height:100%;border-radius:2px;flex-shrink:0;align-self:stretch;}
+.ann-wrap{display:flex;gap:1rem;}
+.ann-accent{width:3px;border-radius:2px;flex-shrink:0;}
+.ann-accent.warning{background:var(--primary);}
+.ann-accent.promo{background:var(--accent);}
+.ann-accent.info{background:var(--cyan);}
+.ann-accent.maintenance{background:#a78bfa;}
+.ann-type{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.3rem;}
+.ann-type.warning{color:var(--primary2);}
+.ann-type.promo{color:var(--accent);}
+.ann-type.info{color:var(--cyan);}
+.ann-type.maintenance{color:#a78bfa;}
+.ann-title-txt{font-weight:700;font-size:0.95rem;margin-bottom:0.3rem;}
+.ann-body-txt{font-size:0.85rem;color:var(--muted2);line-height:1.45;}
+.ann-meta{font-size:0.75rem;color:var(--muted);margin-top:0.5rem;display:flex;gap:0.8rem;}
+
+/* Slots Widget */
+.slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:1.2rem;}
+.slot-card-mini{
+  background:#1a1b1e;border:1px solid rgba(255,255,255,0.05);
+  border-radius:14px;padding:1.2rem 1rem;text-align:center;
+  transition:all .2s;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.slot-card-mini:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,0.4);}
+.slot-card-mini.available{border-color:rgba(74,222,128,0.4);background:linear-gradient(180deg, #18201a 0%, #151816 100%);}
+.slot-card-mini.occupied{border-color:rgba(248,113,113,0.3);background:linear-gradient(180deg, #201819 0%, #171515 100%);}
+.slot-card-mini .snum{font-size:1.8rem;font-weight:900;margin-bottom:0.3rem;}
+.slot-card-mini .slbl{font-size:0.75rem;color:#71717a;text-transform:uppercase;letter-spacing:1px;font-weight:700;}
+.slot-card-mini.available .snum{color:#4ade80;}
+.slot-card-mini.occupied .snum{color:#f87171;}
+
+/* Loading spinner */
+.loader{display:flex;align-items:center;justify-content:center;padding:2rem;gap:0.5rem;color:var(--muted);}
+.spin{width:20px;height:20px;border:2px solid rgba(249,115,22,0.3);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Empty state */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
+.empty-ico{font-size:2.5rem;margin-bottom:0.7rem;opacity:0.5;}
+
+/* Notification toast */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:999;
+  background:#18181b;border:1px solid rgba(74,222,128,0.3);
+  color:var(--green);border-radius:12px;padding:0.9rem 1.5rem;
+  font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  display:flex;align-items:center;gap:0.6rem;
+  transform:translateY(20px);opacity:0;
+  transition:all .3s ease;
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* Mobile responsive */
+@media(max-width:1100px){.main{grid-template-columns:0 1fr 280px;}.left-nav{display:none;}}
+@media(max-width:760px){.main{grid-template-columns:1fr;}.right-sidebar{display:none;}.stats-bar .stat-item:nth-child(n+3){display:none;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo">🅿️</div>
+    <div class="brand"><span>ParkMatrix</span></div>
+  </div>
+  <div class="nav-center">
+    <div class="search-wrap">
+      <span class="search-ico">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="text" placeholder="Search parking lots, announcements…" id="searchInput"/>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div class="avatar" id="navAvatar">U</div>
+      <div style="line-height:1.2;">
+        <div style="font-weight:700;font-size:0.95rem;" id="navName">User</div>
+        <div style="font-size:0.75rem;color:var(--muted);" id="navRole">Member</div>
+      </div>
+    </div>
+    <button class="nav-btn" onclick="logout()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════ STATS BAR ══════════ -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-icon si-green">🟢</div>
+    <div class="stat-info">
+      <div class="val" id="sFreeSlots">–</div>
+      <div class="lbl">Free Slots Available</div>
+      <div class="change up" id="sFreeChange">Live</div>
+    </div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-icon si-orange">🚗</div>
+    <div class="stat-info">
+      <div class="val" id="sParked">–</div>
+      <div class="lbl">Cars Parked Now</div>
+      <div class="change up">↑ Active</div>
+    </div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-icon si-cyan">📢</div>
+    <div class="stat-info">
+      <div class="val" id="sAnnouncements">–</div>
+      <div class="lbl">Active Announcements</div>
+      <div class="change up">Today</div>
+    </div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-icon si-pink">🏢</div>
+    <div class="stat-info">
+      <div class="val" id="sLots">–</div>
+      <div class="lbl">Parking Lots</div>
+      <div class="change up">Registered</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main">
+
+  <!-- LEFT NAV -->
+  <aside class="left-nav">
+    <div class="nav-section-title">Menu</div>
+    <a class="nav-item" href="Home.html">
+      <span class="ni">🏠</span> Home Feed
+    </a>
+    <a class="nav-item" href="Profile.html" id="myProfileLink">
+      <span class="ni">👤</span> My Profile
+    </a>
+    <a class="nav-item" href="My Parking.html" id="myParkingLink">
+      <span class="ni">🚗</span> My Parking
+    </a>
+    <div class="nav-section-title">Explore</div>
+    <a class="nav-item" href="Free Slots.html">
+      <span class="ni">🟢</span> Free Slots
+      <span class="nav-chip" id="slotCount" style="background:#7c2d12;color:#f97316;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;padding:0;font-size:0.85rem;margin-left:auto;">0</span>
+    </a>
+    <a class="nav-item active" href="Alerts.html">
+      <span class="ni">⚠️</span> Alerts
+    </a>
+    <a class="nav-item" href="Community.html">
+      <span class="ni">💬</span> Community
+    </a>
+    <div class="nav-section-title">Account</div>
+    <a class="nav-item" href="Login page.html" onclick="logout()">
+      <span class="ni">🚪</span> Sign Out
+    </a>
+  </aside>
+
+  <!-- CENTER FEED -->
+  <main class="center-feed">
+
+    <!-- Alerts Actions -->
+    <div class="create-post" style="padding:1.5rem;">
+      <div class="create-post-head" style="margin-bottom:1rem;">
+        <div style="flex:1;">
+          <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:0.25rem;">Alerts</h3>
+          <p style="color:var(--muted);font-size:0.95rem;">Stay updated with the latest parking notifications.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;">
+        <div class="cp-avatar" id="cpAvatar">U</div>
+        <div style="flex:1;">
+          <textarea id="postText" class="cp-input" rows="2" placeholder="Post a new alert..."></textarea>
+          <div class="cp-actions">
+            <div class="cp-tags">
+              <span class="cp-tag" style="border-color:rgba(248,113,113,0.5);color:#f87171;" onclick="tagPost('alert')">⚠️ Alert</span>
+            </div>
+            <button class="btn-post" style="background:linear-gradient(135deg, #f87171, #ef4444);" onclick="submitPost()">Post Alert</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed Tabs -->
+    <div class="feed-tabs">
+      <div class="ftab" onclick="switchTab(this,'all')">🌐 All Updates</div>
+      <div class="ftab" onclick="switchTab(this,'slot')">🟢 Free Slots</div>
+      <div class="ftab active" onclick="switchTab(this,'alert')">⚠️ Alerts</div>
+      <div class="ftab" onclick="switchTab(this,'general')">💬 Community</div>
+      <div class="ftab" onclick="window.location.href='My Parking.html'">🕒 Bookings</div>
+    </div>
+
+    <!-- Feed Container -->
+    <div id="feedContainer">
+      <div class="loader"><div class="spin"></div> Loading feed…</div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="right-sidebar">
+
+    <!-- Free Slots Widget -->
+    <div class="widget">
+      <div class="wid-head">
+        <div class="wid-title">
+          <div class="live-dot"></div> Free Slots
+        </div>
+        <span class="wid-badge" id="sideSlotCount">Loading…</span>
+      </div>
+      <div class="slot-grid" id="slotGrid">
+        <div class="loader" style="grid-column:span 2;padding:1rem;"><div class="spin"></div></div>
+      </div>
+    </div>
+
+    <!-- Announcements Widget -->
+    <div class="widget">
+      <div class="wid-head">
+        <div class="wid-title">📢 Announcements</div>
+        <span class="wid-badge" id="annCount">–</span>
+      </div>
+      <div id="annContainer">
+        <div class="loader"><div class="spin"></div></div>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<script src="database.js"></script>
+<script>
+/* ═══════════════════════════════════
+   AUTH CHECK
+═══════════════════════════════════ */
+const session = requireLogin();
+
+if (session) {
+  const name  = session.full_name || session.username || session.loginId || 'User';
+  const init  = name[0].toUpperCase();
+  const role  = session.role === 'admin' ? 'Administrator' : session.role === 'parking_owner' ? 'Lot Owner' : 'Member';
+
+  document.getElementById('navAvatar').textContent = init;
+  const cpAvatar = document.getElementById('cpAvatar');
+  if (cpAvatar) cpAvatar.textContent = init;
+  document.getElementById('navName').textContent = name;
+  document.getElementById('navRole').textContent = role;
+}
+
+function logout() {
+  clearSession();
+  window.location.href = 'Login page.html';
+}
+
+/* ═══════════════════════════════════
+   MOCK / LIVE DATA
+═══════════════════════════════════ */
+const MOCK_FEED = [
+  {
+    id: 1, type: 'slot', user: 'David P.', init: 'D', color: '#4ade80', bg: 'rgba(74,222,128,0.18)',
+    time: '2 min ago', loc: 'City Center Parking',
+    text: 'Spotted 8 free slots on Level 2! Come quick, it\'s usually packed here on Fridays.',
+    slots: 8, likes: 24, comments: 3
+  },
+  {
+    id: 2, type: 'alert', user: 'ParkMatrix Bot', init: '🤖', color: '#f87171', bg: 'rgba(248,113,113,0.15)',
+    time: '15 min ago', loc: 'North Wing Lot',
+    text: 'EV Charging Station on Floor B2 is temporarily out of service due to maintenance. We apologize for the inconvenience.',
+    likes: 8, comments: 1
+  },
+  {
+    id: 3, type: 'slot', user: 'Priya R.', init: 'P', color: '#22d3ee', bg: 'rgba(34,211,238,0.18)',
+    time: '1 hour ago', loc: 'Mall Road Upper Deck',
+    text: 'Just left from Mall Road Upper Deck — first 3 rows are totally free. No queue at the entry point either.',
+    slots: 12, likes: 16, comments: 5
+  },
+  {
+    id: 4, type: 'general', user: 'Noor A.', init: 'N', color: '#f472b6', bg: 'rgba(244,114,182,0.18)',
+    time: '3 hours ago', loc: null,
+    text: 'Does anyone know if City Mall Parking has monthly passes? Looking for a spot near the office.',
+    likes: 2, comments: 7
+  },
+  {
+    id: 5, type: 'slot', user: 'Sam K.', init: 'S', color: '#a78bfa', bg: 'rgba(167,139,250,0.18)',
+    time: '5 hours ago', loc: 'Lakeview Multiplex',
+    text: 'Lakeview has extended their free parking hours until 10 PM this weekend only. Go check it out — around 20+ free slots!',
+    slots: 22, likes: 41, comments: 12
+  },
+];
+
+const MOCK_ANN = [
+  {
+    type: 'promo', title: '🎁 Free Car Wash Weekend',
+    body: 'Park for 4+ hours this weekend and get a complimentary exterior wash. Valid Apr 12–13.',
+    lot: 'Premium Auto Park', expiry: 'Apr 13, 2026'
+  },
+  {
+    type: 'info', title: '⚡ 10 New EV Chargers',
+    body: 'We\'ve installed fast-charging stations on Floor 2. Available for all EV vehicles now.',
+    lot: 'EcoPark Lot', expiry: 'Indefinite'
+  },
+  {
+    type: 'warning', title: '🚧 Gate B Maintenance',
+    body: 'Gate B at South Complex will be closed Apr 11–14 for repair. Use Gate A.',
+    lot: 'South Complex', expiry: 'Apr 14, 2026'
+  },
+  {
+    type: 'promo', title: '🎯 50% OFF Monthly Pass',
+    body: 'Sign up for a monthly pass this April and get 50% off for the first month.',
+    lot: 'City Center Parking', expiry: 'Apr 30, 2026'
+  },
+];
+
+const MOCK_SLOTS = [
+  { id: 'A1', status: 'available' }, { id: 'A2', status: 'occupied' },
+  { id: 'B1', status: 'available' }, { id: 'B2', status: 'available' },
+  { id: 'C1', status: 'occupied' }, { id: 'C2', status: 'available' },
+  { id: 'D1', status: 'available' }, { id: 'D2', status: 'occupied' },
+];
+
+/* ═══════════════════════════════════
+   FEED
+═══════════════════════════════════ */
+let currentTag = null;
+let feedData = [];
+
+function renderFeed(data) {
+  const container = document.getElementById('feedContainer');
+  if (!data.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-ico">🔍</div><div>No posts here yet.</div></div>`;
+    return;
+  }
+  container.innerHTML = data.map((p, i) => {
+    const typeMap = { slot: ['t-slot', 'Free Slot'], alert: ['t-alert', 'Alert'], general: ['t-general', 'Community'], update: ['t-update', 'Update'] };
+    const [tClass, tLabel] = typeMap[p.type] || ['t-general', 'Post'];
+    const slotBlock = p.slots ? `
+      <div class="slot-highlight">
+        <div class="slot-num">${p.slots}</div>
+        <div class="slot-label"><strong>Free Slots Available</strong>${p.loc ? `at ${p.loc}` : ''}</div>
+      </div>` : '';
+    return `
+      <div class="feed-card" style="animation-delay:${i * 0.06}s" data-type="${p.type}" data-id="${p.id}">
+        <div class="fc-head">
+          <div class="fc-avatar" style="background:${p.bg};color:${p.color};">${p.init}</div>
+          <div class="fc-info">
+            <div class="name">${p.user} <span class="fc-type ${tClass}">${tLabel}</span></div>
+            <div class="meta">
+              <span>${p.time}</span>
+              ${p.loc ? `<span>· 📍 ${p.loc}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="fc-body">${p.text}${slotBlock}</div>
+        <div class="fc-actions">
+          <button class="act-btn" onclick="toggleLike(this,${p.id})">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            <span class="lcount">${p.likes}</span>
+          </button>
+          <button class="act-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            ${p.comments} ${p.comments === 1 ? 'reply' : 'replies'}
+          </button>
+          <button class="act-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
+          </button>
+          ${p.type === 'slot' ? `<button class="act-btn" style="margin-left:auto; background:var(--green); color:#000; padding:0.4rem 1rem; border-radius:6px; font-weight:600;" onclick="window.location.href='Reserve Slot.html${p.parkingId ? '?parkingId=' + p.parkingId : ''}'">Reserve Spot</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function switchTab(el, type) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = type === 'all' ? feedData : feedData.filter(p => p.type === type);
+  renderFeed(filtered);
+}
+
+function filterFeed(type) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  const filtered = feedData.filter(p => p.type === type);
+  renderFeed(filtered);
+}
+
+let postTag = 'alert';
+function tagPost(tag) {
+  postTag = tag;
+  document.querySelectorAll('.cp-tag').forEach(t => t.style.borderColor = '');
+  event.target.style.borderColor = 'rgba(249,115,22,0.5)';
+  event.target.style.color = 'var(--primary)';
+}
+
+function submitPost() {
+  const txt = document.getElementById('postText').value.trim();
+  if (!txt) return;
+  const me = session ? (session.full_name || session.username || 'You') : 'You';
+  const init = me[0].toUpperCase();
+  const newPost = {
+    id: Date.now(), type: postTag, user: me, init,
+    color: '#f97316', bg: 'rgba(249,115,22,0.18)',
+    time: 'Just now', loc: null, text: txt,
+    likes: 0, comments: 0
+  };
+  feedData.unshift(newPost);
+  document.getElementById('postText').value = '';
+  document.querySelectorAll('.cp-tag').forEach(t => { t.style.borderColor = ''; t.style.color = ''; });
+  postTag = 'alert';
+  const activeTab = document.querySelector('.ftab.active');
+  const curType = activeTab ? activeTab.getAttribute('onclick')?.match(/'(\w+)'/)?.[1] : 'all';
+  const filtered = (curType === 'all' || !curType) ? feedData : feedData.filter(p => p.type === curType);
+  renderFeed(filtered);
+  showToast('✅ Posted to the community feed!');
+}
+
+function toggleLike(btn, id) {
+  const post = feedData.find(p => p.id === id);
+  if (!post) return;
+  const lc = btn.querySelector('.lcount');
+  if (btn.classList.contains('liked')) {
+    btn.classList.remove('liked');
+    post.likes--;
+    lc.textContent = post.likes;
+  } else {
+    btn.classList.add('liked');
+    post.likes++;
+    lc.textContent = post.likes;
+  }
+}
+
+/* ═══════════════════════════════════
+   ANNOUNCEMENTS
+═══════════════════════════════════ */
+function renderAnnouncements(data) {
+  const c = document.getElementById('annContainer');
+  document.getElementById('annCount').textContent = data.length;
+  document.getElementById('sAnnouncements').textContent = data.length;
+  if (!data.length) { c.innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div>No announcements</div></div>'; return; }
+  c.innerHTML = data.map(a => `
+    <div class="ann-item">
+      <div class="ann-wrap">
+        <div class="ann-accent ${a.type}"></div>
+        <div style="flex:1">
+          <div class="ann-type ${a.type}">${a.type.toUpperCase()}</div>
+          <div class="ann-title-txt">${a.title}</div>
+          <div class="ann-body-txt">${a.body}</div>
+          <div class="ann-meta">
+            <span>🏢 ${a.lot}</span><span>📅 ${a.expiry}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════
+   SLOTS
+═══════════════════════════════════ */
+function renderSlots(slots) {
+  const grid = document.getElementById('slotGrid');
+  if(!slots || !slots.length) { grid.innerHTML = '<div style="grid-column:span 2;text-align:center;color:#888;">No slots available</div>'; return; }
+  const freeCount = slots.filter(s => s.status === 'available').length;
+  document.getElementById('sideSlotCount').textContent = `${freeCount} Free`;
+  document.getElementById('sFreeSlots').textContent = freeCount;
+  if(document.getElementById('slotCount')) document.getElementById('slotCount').textContent = freeCount;
+  document.getElementById('sParked').textContent = slots.filter(s => s.status === 'occupied').length;
+  grid.innerHTML = slots.map(s => `
+    <div class="slot-card-mini ${s.status}" ${s.status === 'available' ? `onclick="bookSlot('${s.id}', '${s.owner_id}')"` : ''}>
+      <div class="snum">${s.status === 'available' ? s.id : '🚗'}</div>
+      <div class="slbl">${s.status === 'available' ? 'OPEN' : 'OCCUPIED'}</div>
+    </div>`).join('');
+}
+
+async function bookSlot(slotId, ownerId) {
+  if (!confirm(`Do you want to book slot ${slotId}?`)) return;
+  const token = sessionStorage.getItem('cp_token');
+  if (!token) { showToast('Please log in to book a slot'); return; }
+  
+  try {
+    const res = await fetch('http://localhost:5000/api/bookings/book', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ slot_id: slotId, owner_id: ownerId })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Slot booked successfully!');
+      // Refresh slots
+      setTimeout(fetchAndRenderSlots, 500);
+    } else {
+      showToast(data.message || 'Error booking slot');
+    }
+  } catch(e) {
+    showToast('Failed to connect to server');
+  }
+}
+
+
+async function fetchAndRenderFeed() {
+  try {
+    const resSlots = await fetch('http://localhost:5000/api/slots');
+    const dataSlots = await resSlots.json();
+    
+    let allPosts = [];
+    
+    if(dataSlots.success) {
+      renderSlots(dataSlots.slots);
+      
+      const lots = {};
+      dataSlots.slots.forEach(s => {
+        if (!lots[s.owner_id]) {
+          lots[s.owner_id] = {
+            id: s.owner_id,
+            type: 'slot',
+            user: s.lot_name || 'Parking Lot',
+            init: (s.lot_name || 'P')[0].toUpperCase(),
+            color: '#4ade80', bg: 'rgba(74,222,128,0.18)',
+            time: 'Live', loc: s.lot_name,
+            text: `*Price:* ₹${s.pricePerHour || 50}/hr\nReal-time free slots available at ${s.lot_name}.`,
+            slots: 0, likes: 0, comments: 0,
+            parkingId: s.owner_id
+          };
+        }
+        if (s.status === 'available') {
+          lots[s.owner_id].slots++;
+        }
+      });
+      
+      allPosts = [...allPosts, ...Object.values(lots)];
+    }
+
+    try {
+      const resAnn = await fetch('http://localhost:5000/api/announcements');
+      const dataAnn = await resAnn.json();
+      if(dataAnn.success) {
+        renderAnnouncements(dataAnn.announcements);
+        
+        const annPosts = dataAnn.announcements.map(a => ({
+          id: a._id,
+          type: a.type === 'promo' || a.type === 'info' || a.type === 'warning' ? 'alert' : a.type,
+          user: 'Admin/Owner',
+          init: 'A',
+          color: '#22d3ee', bg: 'rgba(34,211,238,0.18)',
+          time: new Date(a.createdAt).toLocaleDateString(), loc: a.lot || null,
+          text: `**${a.title}**\n${a.body}`,
+          likes: 0, comments: 0
+        }));
+        allPosts = [...allPosts, ...annPosts];
+      }
+    } catch(e) {}
+    
+    feedData = allPosts;
+    const activeTab = document.querySelector('.ftab.active');
+    const curType = activeTab ? activeTab.getAttribute('onclick')?.match(/'(\w+)'/)?.[1] : 'all';
+    const filtered = (curType === 'all' || !curType) ? feedData : feedData.filter(p => p.type === curType);
+    renderFeed(filtered);
+    
+  } catch(e) {
+    renderSlots([]);
+  }
+}
+
+fetchAndRenderFeed();
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ═══════════════════════════════════
+   SEARCH
+═══════════════════════════════════ */
+document.getElementById('searchInput').addEventListener('input', function () {
+  const q = this.value.toLowerCase();
+  if (!q) { renderFeed(feedData); return; }
+  const filtered = feedData.filter(p => p.text.toLowerCase().includes(q) || (p.loc || '').toLowerCase().includes(q) || p.user.toLowerCase().includes(q));
+  renderFeed(filtered);
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+(async function init() {
+  // Stats
+  try {
+    const [users, owners] = await Promise.all([getAllUsers(), getAllOwners()]);
+    document.getElementById('sLots').textContent = owners.length || '–';
+    document.getElementById('slotCount').textContent = 'Live';
+  } catch {}
+
+  // Render feed with brief loader effect
+  setTimeout(() => {
+    renderFeed(feedData);
+    document.getElementById('slotCount').textContent = MOCK_SLOTS.filter(s => s.status === 'available').length;
+  }, 400);
+
+  // Announcements
+  setTimeout(async () => {
+    try {
+      const anns = await getAllAnnouncements();
+      renderAnnouncements(anns);
+    } catch (e) {
+      console.error(e);
+      renderAnnouncements(MOCK_ANN); // Fallback to mock on error
+    }
+  }, 300);
+
+  // Slots
+  setTimeout(fetchAndRenderSlots, 350);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Owner Login – Car Parking System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  min-height:100vh;
+  display:flex;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background: url('owner_background.jpg') center center/cover no-repeat fixed;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(5, 1, 15, 0.85);
+  z-index: -1;
+}
+
+:root{
+  --g:#f97316;--g2:#fb923c;--t:#fbbf24;
+  --v:#ea580c;--pk:#f43f5e;
+  --txt:#fff7ed;--muted:#9a7055;
+  --err:#f87171;--ok:#4ade80;
+  --card:rgba(26,8,0,0.88);
+  --border:rgba(249,115,22,0.20);
+}
+
+/* ═══════════ LEFT ═══════════ */
+.left{
+  flex:0 0 46%;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 36px;
+}
+
+/* Multi-layer orange/amber gradient */
+.bg-layer{
+  position:absolute;inset:0;z-index:0;
+  background:linear-gradient(135deg,#05010f 0%,#1a0600 40%,#2d0e00 80%,#05010f 100%);
+}
+.bg-layer::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(249,115,22,0.45) 0%,transparent 60%),
+    radial-gradient(circle at 90% 80%, rgba(251,191,36,0.30) 0%,transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 10%, rgba(244,63,94,0.15) 0%,transparent 50%);
+  animation:shiftBG 14s ease-in-out infinite alternate;
+}
+@keyframes shiftBG{
+  0%{transform:scale(1) translate(0,0);}
+  100%{transform:scale(1.1) translate(-20px,20px);}
+}
+
+.noise{
+  position:absolute;inset:0;z-index:1;opacity:0.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+.pattern{
+  position:absolute;inset:0;z-index:1;opacity:0.08;
+  background-image:linear-gradient(rgba(249,115,22,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,0.6) 1px,transparent 1px);
+  background-size:40px 40px;
+  transform:perspective(500px) rotateX(60deg) translateY(-100px) scale(3);
+}
+
+/* Float items */
+.float-obj{
+  position:absolute;z-index:2;border-radius:24px;
+  background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);
+  border:1px solid rgba(249,115,22,0.3);
+  display:flex;align-items:center;justify-content:center;
+  animation:float 6s ease-in-out infinite alternate;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+.fo-1{width:80px;height:80px;top:15%;left:10%;animation-delay:0s;font-size:32px;transform:rotate(-10deg);}
+.fo-2{width:100px;height:100px;bottom:20%;right:8%;animation-delay:2s;font-size:42px;transform:rotate(15deg);border-color:rgba(251,191,36,0.3);}
+@keyframes float{
+  0%{transform:translateY(0) rotate(0);}
+  100%{transform:translateY(-20px) rotate(5deg);}
+}
+
+.brand{position:relative;z-index:5;text-align:center;max-width:440px;}
+.b-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);
+  padding:6px 14px;border-radius:99px;font-size:11.5px;font-weight:700;
+  color:#fed7aa;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px;
+}
+.b-tag span{width:6px;height:6px;border-radius:50%;background:#f97316;box-shadow:0 0 8px #f97316;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.brand h1{
+  font-size:44px;font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:18px;
+  background:linear-gradient(135deg,#fff 20%,#fb923c 60%,#fbbf24 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.brand p{font-size:15.5px;color:var(--muted);line-height:1.6;margin:0 auto 36px;max-width:360px;}
+
+.stats{display:flex;gap:16px;justify-content:center;}
+.stat{
+  background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);
+  padding:16px 20px;border-radius:16px;text-align:left;flex:1;
+}
+.stat .sn{font-size:24px;font-weight:800;color:#fff;margin-bottom:2px;}
+.stat .sl{font-size:12px;color:var(--muted);font-weight:600;}
+
+
+/* ═══════════ RIGHT ═══════════ */
+.right{
+  flex:1;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 30px;
+  background:rgba(255,255,255,0.015);
+  border-left:1px solid rgba(255,255,255,0.05);
+}
+.fbox{width:100%;max-width:440px;position:relative;z-index:2;}
+.fhead{margin-bottom:32px;}
+.fhead-logo{
+  width:54px;height:54px;border-radius:16px;
+  background:linear-gradient(135deg,var(--g),var(--t));
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  margin-bottom:20px;box-shadow:0 8px 24px rgba(249,115,22,0.4);
+}
+.fhead h2{font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:6px;}
+.fhead p{font-size:14px;color:var(--muted);}
+
+/* ── FORMS ── */
+.field{margin-bottom:24px;}
+.flabel{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+
+.iw{position:relative;}
+.iico{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:16px;opacity:0.5;transition:opacity .3s;pointer-events:none;}
+.iico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+input{
+  width:100%;padding:14px 44px 14px 44px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;color:#fff;font-family:inherit;font-size:14.5px;
+  transition:all .3s ease;outline:none;
+}
+input::placeholder{color:rgba(154,112,85,0.5);}
+input:focus{
+  border-color:rgba(249,115,22,0.5);background:rgba(249,115,22,0.05);
+  box-shadow:0 0 0 3px rgba(249,115,22,0.1);
+}
+.field:focus-within .iico{opacity:1;color:#f97316;}
+
+.eye-btn{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;padding:6px;color:var(--muted);
+}
+.eye-btn:hover{color:#fb923c;}
+.eye-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;}
+
+/* ── Alerts ── */
+.alert{
+  padding:14px 16px;border-radius:12px;font-size:13px;font-weight:600;
+  display:none;align-items:center;gap:12px;margin-bottom:24px;
+}
+.alert.err{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:#fca5a5;animation:shake 0.4s ease;}
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+/* ── Buttons ── */
+.btn-submit{
+  width: 100%;
+  padding:16px;background:linear-gradient(135deg,var(--g),var(--t));
+  border:none;border-radius:12px;color:#000;font-size:15px;font-weight:800;font-family:inherit;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .2s,box-shadow .2s;box-shadow:0 8px 24px rgba(249,115,22,0.3);
+}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(249,115,22,0.4);}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.login-row{text-align:center;font-size:14px;color:var(--muted);margin-top:32px;}
+.login-row a{color:#fbbf24;font-weight:700;text-decoration:none;margin-left:6px;}
+.login-row a:hover{text-decoration:underline;}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  body{flex-direction:column;overflow-y:auto;}
+  .left{flex:none;min-height:300px;padding:40px 24px;}
+  .right{border-left:none;border-top:1px solid rgba(255,255,255,0.05);padding:32px 24px;}
+  .float-obj{display:none;}
+  .brand h1{font-size:32px;}
+}
+</style>
+</head>
+<body>
+
+<div class="left">
+  <div class="bg-layer"></div>
+  <div class="noise"></div>
+  <div class="pattern"></div>
+  
+  <div class="float-obj fo-1">🅿️</div>
+  <div class="float-obj fo-2">🏙️</div>
+
+  <div class="brand">
+    <div class="b-tag"><span></span>Partner Portal</div>
+    <h1>Welcome Back, Partner</h1>
+    <p>Sign in to your dashboard to monitor slots, manage bookings, and analyze your revenue.</p>
+    <div class="stats">
+      <div class="stat"><div class="sn">24/7</div><div class="sl">Monitoring</div></div>
+      <div class="stat"><div class="sn">Real</div><div class="sl">Time Data</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="right">
+  <div class="fbox">
+    
+    <div class="fhead">
+      <div class="fhead-logo">📈</div>
+      <h2>Owner Sign In</h2>
+      <p>Enter your credentials to access your portal.</p>
+    </div>
+
+    <!-- ── ALERTS ── -->
+    <div class="alert err" id="err-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="err-txt"></span>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <div class="flabel"><span class="dot"></span>Owner ID / Username<span class="req">*</span></div>
+        <div class="iw">
+          <span class="iico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <input type="text" id="login-id" placeholder="e.g. OWNER001 or johndoe" autocomplete="username" required/>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="flabel"><span class="dot"></span>Password<span class="req">*</span></div>
+        <div class="iw">
+          <span class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required/>
+          <button type="button" class="eye-btn" id="eye-btn" aria-label="Toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="login-btn">
+        <span id="btn-text">Sign In</span>
+        <svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </form>
+
+    <div class="login-row" style="line-height:1.6;">
+      Want to partner with us?<a href="Owner Register.html">Register Parking Lot</a><br>
+      <span style="opacity:0.9;font-size:13px;">Looking for user portal? <a href="Login page.html" style="color:#f97316;">Normal Login</a></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+
+/* ── Eye toggle ── */
+const eyeBtn = document.getElementById('eye-btn');
+const passEl = document.getElementById('password');
+let shown = false;
+eyeBtn.addEventListener('click', () => {
+  shown = !shown;
+  passEl.type = shown ? 'text' : 'password';
+  eyeBtn.innerHTML = shown
+    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+});
+
+/* ── Error / Loading ── */
+const errBox = document.getElementById('err-msg');
+const errTxt = document.getElementById('err-txt');
+const btnEl  = document.getElementById('login-btn');
+const btnTxt = document.getElementById('btn-text');
+
+function showError(msg) {
+  errTxt.textContent = msg;
+  errBox.style.display = 'flex';
+  errBox.style.animation = 'none';
+  void errBox.offsetWidth;
+  errBox.style.animation = 'shake .4s ease';
+}
+function hideError() { errBox.style.display = 'none'; }
+function setLoading(s) {
+  btnEl.disabled = s;
+  if (s) {
+    btnEl.innerHTML = '<span class="spinner"></span><span>Signing in…</span>';
+  } else {
+    btnEl.innerHTML = '<span id="btn-text">Sign In</span><svg class="barrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  }
+}
+
+/* ── Form submit ── */
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault(); hideError();
+  const loginId  = document.getElementById('login-id').value.trim();
+  const password = passEl.value;
+  if (!loginId)  { document.getElementById('login-id').focus(); showError('Please enter your Login ID.'); return; }
+  if (!password) { passEl.focus(); showError('Please enter your password.'); return; }
+
+  setLoading(true);
+  try {
+    const res  = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ loginId, password })
+    });
+    const data = await res.json();
+    if (!data.success) { showError(data.message || 'Invalid credentials.'); setLoading(false); return; }
+    sessionStorage.setItem('cp_token',   data.token);
+    sessionStorage.setItem('cp_session', JSON.stringify({ ...data.user, role: data.role }));
+    switch(data.role) {
+      case 'admin':         window.location.href = 'Admin page.html'; break;
+      case 'parking_owner': window.location.href = 'Owner page.html'; break;
+      case 'user':          window.location.href = 'Home.html'; break;
+    }
+  } catch {
+    showError('Cannot connect to server. Ensure backend is running.');
+    setLoading(false);
+  }
+});
+
+document.getElementById('login-id').focus();
+</script>
+</body>
+</html>

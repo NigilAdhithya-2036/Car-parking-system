@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Announcement – Car Parking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #09090b; --surface: #18181b; --border: #27272a;
+            --primary: #f97316; --primary-hover: #ea580c; --accent: #fbbf24;
+            --text-main: #f8fafc; --text-muted: #a1a1aa;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 15% 50%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 85% 30%, rgba(251, 191, 36, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5rem;
+        }
+
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 2rem; background: rgba(9, 9, 11, 0.7);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 1rem; }
+        .logo-box {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; font-weight: 800; color: #000;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+        }
+        .brand-name { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); padding: 0.5rem 1rem; border-radius: 8px;
+            font-weight: 500; cursor: pointer; transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .form-container {
+            background: rgba(24, 24, 27, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 600px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-header { margin-bottom: 2rem; text-align: center; }
+        .form-header h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .form-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block; font-size: 0.9rem; font-weight: 500;
+            color: var(--text-muted); margin-bottom: 0.5rem;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #000; padding: 1rem; border-radius: 8px; border: none;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s; font-family: inherit;
+            margin-top: 1rem;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        /* Success Message styling */
+        .toast {
+            position: fixed;
+            bottom: 2rem; left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #22c55e;
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo-box">🅿️</div>
+            <div class="brand-name">ParkMatrix</div>
+        </div>
+        <a href="Owner page.html" class="btn-back">← Back to Dashboard</a>
+    </nav>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Create Announcement</h2>
+            <p>Post a new announcement or update to all users</p>
+        </div>
+        <form id="announcementForm" onsubmit="postAnnouncement(event)">
+            <div class="form-group">
+                <label for="title">Announcement Title</label>
+                <input type="text" id="title" placeholder="e.g. Parking Lot Maintenance" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="type">Announcement Type</label>
+                <select id="type" style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); color: var(--text-main); padding: 0.8rem 1rem; border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+                    <option value="slot">🟢 Free Slot</option>
+                    <option value="alert">⚠️ Alert</option>
+                    <option value="general">💬 General Update</option>
+                    <option value="promo">📢 Promotion</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="slotsGroup" style="display: none;">
+                <label for="slotsNum">Number of Free Slots</label>
+                <input type="number" id="slotsNum" placeholder="e.g. 5" min="1" />
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="hours">Hours (e.g. 9:00 AM - 5:00 PM)</label>
+                <input type="text" id="hours" placeholder="e.g. 9:00 AM - 5:00 PM" required />
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact Number</label>
+                <input type="tel" id="contact" placeholder="e.g. +1 234 567 890" required />
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="text" id="price" placeholder="e.g. $5/hour or Free" required />
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" placeholder="Write your announcement details here..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Post Announcement</button>
+        </form>
+    </div>
+
+    <div id="toast" class="toast">Announcement Posted Successfully!</div>
+
+    <script>
+        document.getElementById('type').addEventListener('change', function(e) {
+            const slotsGroup = document.getElementById('slotsGroup');
+            if (e.target.value === 'slot') {
+                slotsGroup.style.display = 'block';
+                document.getElementById('slotsNum').required = true;
+            } else {
+                slotsGroup.style.display = 'none';
+                document.getElementById('slotsNum').required = false;
+            }
+        });
+        
+        // Trigger once to set initial state
+        document.getElementById('type').dispatchEvent(new Event('change'));
+
+        function postAnnouncement(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const type = document.getElementById('type').value;
+            const message = document.getElementById('message').value;
+            const date = document.getElementById('date').value;
+            const hours = document.getElementById('hours').value;
+            const contact = document.getElementById('contact').value;
+            const price = document.getElementById('price').value;
+            const slotsNum = document.getElementById('slotsNum').value;
+            
+            let bodyStr = `${message}\n\n*Date:* ${date} | *Hours:* ${hours} | *Contact:* ${contact} | *Price:* ${price}`;
+            if (type === 'slot' && slotsNum) {
+                bodyStr = `**${slotsNum} Free Slots Available!**\n` + bodyStr;
+            }
+            
+            const btn = document.querySelector('.btn-submit');
+            btn.innerHTML = 'Posting...';
+            btn.style.opacity = '0.8';
+            btn.disabled = true;
+
+            fetch('http://localhost:5000/api/announcements', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: title,
+                    type: type,
+                    body: bodyStr,
+                    lot: 'Your Parking Lot',
+                    expiry: date
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Show success toast
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                
+                // Reset form
+                document.getElementById('announcementForm').reset();
+                
+                // Reset button
+                const btn = document.querySelector('.btn-submit');
+                btn.innerHTML = 'Post Announcement';
+                btn.style.opacity = '1';
+                btn.disabled = false;
+                
+                // Hide toast after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            })
+            .catch(err => {
+                const toast = document.getElementById('toast');
+                toast.textContent = "Error posting announcement";
+                toast.style.background = "#ef4444";
+                toast.classList.add('show');
+                const btn = document.querySelector('.btn-submit');
+                btn.innerHTML = 'Post Announcement';
+                btn.style.opacity = '1';
+                btn.disabled = false;
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
